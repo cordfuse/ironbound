@@ -20,46 +20,18 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Build
+        run: node scripts/build.js
+
       - name: Read version
         id: version
         run: echo "VERSION=$(cat version.txt)" >> "$GITHUB_OUTPUT"
 
-      - name: Strip dev mode
-        run: node scripts/strip-dev-mode.js
-
-      - name: Generate checksum
-        run: node scripts/generate-checksum.js
-
-      - name: Update example package versions
-        run: |
-          VERSION="${{ steps.version.outputs.VERSION }}"
-          for pkg in examples/*/package.json; do
-            if [ -f "$pkg" ]; then
-              node -e "
-                const fs = require('fs');
-                const p = JSON.parse(fs.readFileSync('$pkg', 'utf-8'));
-                p.version = '${VERSION}';
-                fs.writeFileSync('$pkg', JSON.stringify(p, null, 2) + '\n');
-              "
-            fi
-          done
-
-      - name: Sync to agent files
-        run: |
-          cp IRONBOUND.md CLAUDE.md
-          cp IRONBOUND.md GEMINI.md
-          cp IRONBOUND.md AGENTS.md
-          cp IRONBOUND.md .windsurfrules
-          cp IRONBOUND.md .clinerules
-
       - name: Package release
         run: |
           VERSION="${{ steps.version.outputs.VERSION }}"
-          zip -r "ironbound-v${VERSION}.zip" . \
-            -x ".git/*" \
-            -x ".github/workflows/*" \
-            -x "node_modules/*" \
-            -x "*.zip"
+          cd dist
+          zip -r "../ironbound-v${VERSION}.zip" .
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
@@ -67,4 +39,4 @@ jobs:
           generate_release_notes: true
           files: |
             ironbound-*.zip
-            .ironbound-checksum
+            dist/.ironbound-checksum

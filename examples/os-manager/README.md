@@ -22,7 +22,7 @@ This example demonstrates:
 
 ## Usage
 
-Start your preferred agent in this directory. The agent becomes SysOp.
+Start your preferred agent in this directory. The agent reads `IRONBOUND.md` (the engine) which loads configuration from `./ironbound/`.
 
 Try these prompts:
 
@@ -35,9 +35,17 @@ Try these prompts:
 ## Project Structure
 
 ```
-IRONBOUND.md       # Agent security boundary
+IRONBOUND.md           # Engine file — loads ./ironbound/
+ironbound/
+  IDENTITY.md          # SysOp persona
+  PERMISSIONS.md       # Command whitelist
+  CONSTRAINTS.md       # Security blacklist
+  WELCOME.md           # Greeting flow
+  REDIRECT.md          # Refusal response
+  SESSION.md           # Singleton/fixed mode
+  MEMORY.md            # Memory scopes
 src/
-  system.ts        # System info, service status, config generation
+  system.ts            # System info, service status, config generation
 ```
 
 <sub>Built on [IronBound](https://github.com/cordfuseinc/ironbound)</sub>

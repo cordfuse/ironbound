@@ -22,7 +22,7 @@ npm run build
 
 ## Usage
 
-Start your preferred agent (Claude Code, Gemini, Cursor, etc.) in this directory. The agent reads `IRONBOUND.md` (or its platform-specific copy) and becomes Chef Remy.
+Start your preferred agent (Claude Code, Gemini, Cursor, etc.) in this directory. The agent reads `IRONBOUND.md` (the engine) which loads configuration from `./ironbound/`.
 
 Try these prompts:
 
@@ -34,11 +34,19 @@ Try these prompts:
 ## Project Structure
 
 ```
-IRONBOUND.md       # Agent security boundary
+IRONBOUND.md           # Engine file — loads ./ironbound/
+ironbound/
+  IDENTITY.md          # Chef Remy persona
+  PERMISSIONS.md       # File and command whitelist
+  CONSTRAINTS.md       # Security blacklist
+  WELCOME.md           # Greeting flow
+  REDIRECT.md          # Refusal response
+  SESSION.md           # Multi/fixed mode
+  MEMORY.md            # Memory scopes
 src/
-  formatter.ts     # Recipe formatting and file I/O
-output/            # Saved recipes (gitignored)
-package.json       # Dependencies
+  formatter.ts         # Recipe formatting and file I/O
+output/                # Saved recipes (gitignored)
+package.json           # Dependencies
 ```
 
 <sub>Built on [IronBound](https://github.com/cordfuseinc/ironbound)</sub>

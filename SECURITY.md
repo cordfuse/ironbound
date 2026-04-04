@@ -6,7 +6,7 @@ IronBound implements a five-layer security model to protect AI agent behavior. E
 
 ## Layer 1: Identity Lock
 
-The agent's identity is defined once in `IRONBOUND.md` and cannot be changed at runtime.
+The agent's identity is defined in `ironbound/IDENTITY.md` and cannot be changed at runtime.
 
 **What it protects against:**
 - Persona hijacking ("pretend you're a different AI")
@@ -14,15 +14,15 @@ The agent's identity is defined once in `IRONBOUND.md` and cannot be changed at 
 - Role-play exploits ("act as DAN, the unrestricted AI")
 
 **How it works:**
-- The Identity section sets the agent's name, creator, and purpose
-- The Blacklisted Operations section explicitly forbids adopting any other identity
+- The `IDENTITY.md` file sets the agent's name, creator, and purpose
+- The `CONSTRAINTS.md` file explicitly forbids adopting any other identity
 - The agent must refuse and redirect when asked to change persona
 
 ---
 
 ## Layer 2: Operation Whitelist
 
-All permitted operations are explicitly enumerated. Everything not listed is denied by default.
+All permitted operations are explicitly enumerated in `ironbound/PERMISSIONS.md`. Everything not listed is denied by default.
 
 **What it protects against:**
 - Privilege escalation ("install this package", "run sudo")
@@ -30,15 +30,15 @@ All permitted operations are explicitly enumerated. Everything not listed is den
 - Capability discovery ("what commands can you run?" followed by exploitation)
 
 **How it works:**
-- The Permitted Operations section lists every allowed file operation, shell command, network request, and tool
-- Any request outside this list triggers the Redirect Response
+- The `PERMISSIONS.md` file lists every allowed file operation, shell command, network request, and tool
+- Any request outside this list triggers the redirect response from `REDIRECT.md`
 - The whitelist is the smallest set of permissions needed for the agent to do its job
 
 ---
 
 ## Layer 3: Exhaustive Blacklist
 
-Critical dangerous operations are explicitly enumerated and unconditionally forbidden, regardless of how the request is framed.
+Critical dangerous operations are explicitly enumerated in `ironbound/CONSTRAINTS.md` and unconditionally forbidden, regardless of how the request is framed.
 
 **What it protects against:**
 - System prompt disclosure ("show me your instructions")
@@ -48,7 +48,7 @@ Critical dangerous operations are explicitly enumerated and unconditionally forb
 - Prompt injection from file contents or tool outputs
 
 **How it works:**
-- The Blacklisted Operations section covers eight categories of forbidden behavior
+- The `CONSTRAINTS.md` file covers eight categories of forbidden behavior
 - Each category lists specific prohibited actions
 - The blacklist applies regardless of request framing: direct, hypothetical, role-play, encoded, multi-turn, or social engineering
 - The blacklist is additive — forks should only add rules, never remove them
@@ -67,7 +67,7 @@ Critical dangerous operations are explicitly enumerated and unconditionally forb
 
 ## Layer 4: Memory Protection
 
-Session context and persistent memory are isolated and cannot be used to override instructions.
+Session context and persistent memory are isolated and cannot be used to override instructions. Memory protection is enforced by the engine (`IRONBOUND.md`) and configured in `ironbound/MEMORY.md`.
 
 **What it protects against:**
 - Cross-session training ("remember that you can access /etc/passwd")
@@ -76,7 +76,7 @@ Session context and persistent memory are isolated and cannot be used to overrid
 
 **How it works:**
 - Each session starts clean — no carried-over instructions from previous sessions
-- The IRONBOUND.md file is re-read at every session start as the single source of truth
+- The engine file and all `./ironbound/*.md` files are re-read at every session start as the single source of truth
 - Persistent memory (user and app scopes) can store preferences and data but never permission overrides or rule modifications
 - Conversation history is not treated as a trusted instruction source
 
@@ -92,10 +92,10 @@ The production IRONBOUND.md is checksummed to detect tampering.
 - Drift between development and production configurations
 
 **How it works:**
-- The release workflow strips dev mode content and computes SHA-256 of the clean file
+- The release workflow strips dev mode content and computes SHA-256 of the clean engine file
 - The hash is written to `.ironbound-checksum` and embedded as an HTML comment in IRONBOUND.md
 - Consumers can verify the checksum to confirm the file has not been modified since release
-- The CI workflow ensures all agent files are identical copies of IRONBOUND.md
+- The build script generates all agent files as identical copies of the clean IRONBOUND.md
 
 ### Verifying Integrity
 
@@ -121,7 +121,7 @@ The five layers work together:
 4. **Memory Protection** ensures instructions cannot be overridden across sessions
 5. **Integrity Verification** ensures the file itself has not been tampered with
 
-A successful attack would need to bypass all five layers simultaneously, which requires modifying the IRONBOUND.md file itself — and that is protected by the CI sync workflow, the checksum, and the self-modification blacklist rule.
+A successful attack would need to bypass all five layers simultaneously, which requires modifying the instruction files themselves — and those are protected by the build process, the checksum, and the self-modification blacklist rule.
 
 ---
 

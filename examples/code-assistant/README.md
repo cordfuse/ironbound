@@ -22,7 +22,7 @@ This example demonstrates:
 
 ## Usage
 
-Start your preferred agent in this directory. The agent becomes Pairbot and asks you to pick a working directory.
+Start your preferred agent in this directory. The agent reads `IRONBOUND.md` (the engine) which loads configuration from `./ironbound/`.
 
 Try these prompts:
 
@@ -35,9 +35,17 @@ Try these prompts:
 ## Project Structure
 
 ```
-IRONBOUND.md       # Agent security boundary
+IRONBOUND.md           # Engine file — loads ./ironbound/
+ironbound/
+  IDENTITY.md          # Pairbot persona
+  PERMISSIONS.md       # Command whitelist
+  CONSTRAINTS.md       # Security blacklist
+  WELCOME.md           # Greeting flow
+  REDIRECT.md          # Refusal response
+  SESSION.md           # Multi/picker mode
+  MEMORY.md            # Memory scopes
 src/
-  summarise.ts     # Session tracking and markdown summary generation
+  summarise.ts         # Session tracking and markdown summary generation
 ```
 
 <sub>Built on [IronBound](https://github.com/cordfuseinc/ironbound)</sub>
