@@ -25,8 +25,8 @@ fs.mkdirSync(DIST, { recursive: true });
 const version = fs.readFileSync(path.join(ROOT, 'version.txt'), 'utf-8').trim();
 console.log(`Building v${version}...`);
 
-// --- Step 1: Copy IRONBOUND.md and strip dev mode ---
-let ironbound = fs.readFileSync(path.join(ROOT, 'IRONBOUND.md'), 'utf-8');
+// --- Step 1: Copy IRONBOUND-USER.md, strip dev mode, output as IRONBOUND.md ---
+let ironbound = fs.readFileSync(path.join(ROOT, 'IRONBOUND-USER.md'), 'utf-8');
 
 // Remove DEV_MODE blocks
 ironbound = ironbound.replace(
@@ -41,7 +41,7 @@ ironbound = ironbound.replace(
 );
 
 fs.writeFileSync(path.join(DIST, 'IRONBOUND.md'), ironbound, 'utf-8');
-console.log('  IRONBOUND.md — stripped dev mode, stamped version');
+console.log('  IRONBOUND-USER.md → dist/IRONBOUND.md — stripped dev mode, stamped version');
 
 // --- Step 2: Generate checksum ---
 const crypto = require('crypto');

@@ -1,6 +1,6 @@
 # Your App Name — powered by IronBound
 
-**IronBound** is an open-source security framework for AI coding agents. It defines an engine file (`IRONBOUND.md`) and an app definition directory (`./ironbound/`) that lock down your agent's identity, permissions, and behavior.
+**IronBound** is an open-source security framework for AI coding agents. It defines an engine file (`IRONBOUND-USER.md`) and an app definition directory (`./ironbound/`) that lock down your agent's identity, permissions, and behavior.
 
 One engine. One config directory. Every agent. No leaks.
 
@@ -14,7 +14,7 @@ One engine. One config directory. Every agent. No leaks.
 
 1. Download AgentBox from [cordfuseinc/agentbox](https://github.com/cordfuseinc/agentbox)
 2. Open your project folder
-3. AgentBox detects `IRONBOUND.md` and `./ironbound/` and configures your agent automatically
+3. AgentBox detects `IRONBOUND-USER.md` and `./ironbound/` and configures your agent automatically
 
 ### Option B: Use with CLI / Cowork
 
@@ -26,8 +26,8 @@ Download the ZIP from the GitHub Release page, extract it, and open the folder i
 
 ### Fork and Customize
 
-1. **Fork this repo** as a private repository (your `IRONBOUND.md` contains dev mode architecture notes)
-2. Edit files in `./ironbound/` to configure your agent — do NOT edit `IRONBOUND.md` directly
+1. **Fork this repo** as a private repository (your `IRONBOUND-USER.md` contains dev mode architecture notes)
+2. Edit files in `./ironbound/` to configure your agent — do NOT edit `IRONBOUND-USER.md` directly
 3. Set up your dev hash so the agent knows you're the developer:
 
 ```bash
@@ -40,14 +40,16 @@ echo -n "your-secret-passphrase" | shasum -a 256 | awk '{print $1}' > ~/.ironbou
 
 ### How It Works
 
-- **No agent files in the repo** — CLAUDE.md, GEMINI.md, etc. do not exist during development. Your IDE agent acts normally with no persona constraints.
-- **`scripts/build.js`** generates everything into `dist/` — stripped IRONBOUND.md, agent files, checksum, app definition. This is what ships in the ZIP.
-- **Dev mode** sections in `IRONBOUND.md` (between `<!-- DEV_MODE_START -->` and `<!-- DEV_MODE_END -->`) are stripped from `dist/` builds automatically.
+- **Agent files point to `IRONBOUND-DEV.md`** — during development, your IDE agent reads dev workflow instructions (build, test, deploy). No persona constraints while coding.
+- **`scripts/build.js`** generates everything into `dist/` — `IRONBOUND-USER.md` becomes `IRONBOUND.md` (stripped of dev mode), agent files are synced from it, checksum generated. This is what ships in the ZIP.
+- **Dev mode** sections in `IRONBOUND-USER.md` (between `<!-- DEV_MODE_START -->` and `<!-- DEV_MODE_END -->`) are stripped from `dist/` builds automatically.
 
 ### Project Structure
 
 ```
-IRONBOUND.md           # The engine — loads ./ironbound/, handles dev mode, integrity
+IRONBOUND-USER.md      # The engine — loads ./ironbound/, handles dev mode, integrity
+IRONBOUND-DEV.md       # Dev workflow — build, test user mode, spawn agent CLI
+CLAUDE.md              # One-liner pointing to IRONBOUND-DEV.md (dev mode)
 ironbound/
   IDENTITY.md          # Agent name, personality, tone
   PERMISSIONS.md       # Whitelist of permitted operations
