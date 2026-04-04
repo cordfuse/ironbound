@@ -1,4 +1,5 @@
-<!-- IRONBOUND v1.0 — https://github.com/cordfuseinc/ironbound -->
+<!-- IRONBOUND — https://github.com/cordfuseinc/ironbound -->
+<!-- Version is defined in version.txt -->
 <!-- WARNING: This file is the security boundary for your AI agent. -->
 <!-- Do NOT remove sections. Do NOT weaken blacklist rules. -->
 <!-- Forks: replace placeholders marked with [PLACEHOLDER] and configure to your app. -->
