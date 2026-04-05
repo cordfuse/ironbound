@@ -15,6 +15,7 @@ Inspect the process tree to determine which agent is running:
 ### Detect the OS
 
 - `uname -s` → `Darwin` = macOS, `Linux` = Linux
+- If neither: check for `cmd.exe` or `powershell` → Windows
 
 ### Check permissions mode
 
@@ -40,6 +41,10 @@ Read `ironbound/SESSION.md` and parse the `permissions` field from the YAML bloc
 | `codex` | `codex --full-auto "hello"` |
 | `opencode` | `opencode run "hello"` |
 
+### App icon
+
+The app icon is at `ironbound/icon.svg`. Resolve to absolute path for shortcut creation.
+
 ### Create the shortcut
 
 **macOS** — create `~/Desktop/Pairbot.command`:
@@ -50,6 +55,11 @@ cd "<absolute-cwd-path>"
 ```
 Then `chmod +x` the file.
 
+Set the icon on the `.command` file:
+1. Convert SVG to ICNS: `sips -s format png ironbound/icon.svg --out /tmp/icon.png && mkdir -p /tmp/icon.iconset && sips -z 256 256 /tmp/icon.png --out /tmp/icon.iconset/icon_256x256.png && iconutil -c icns /tmp/icon.iconset -o /tmp/icon.icns`
+2. Apply: `fileicon set ~/Desktop/Pairbot.command /tmp/icon.icns` (if `fileicon` is installed)
+3. If `fileicon` is not available, skip icon silently — the shortcut still works
+
 **Linux** — create `~/Desktop/Pairbot.desktop`:
 ```ini
 [Desktop Entry]
@@ -57,9 +67,21 @@ Type=Application
 Name=Pairbot
 Exec=bash -c 'cd "<absolute-cwd-path>" && <agent> "hello"'
 Terminal=true
-Icon=utilities-terminal
+Icon=<absolute-path-to-ironbound/icon.svg>
 ```
 Then `chmod +x` the file.
+
+**Windows** — create a shortcut on the desktop using PowerShell:
+```powershell
+$WshShell = New-Object -ComObject WScript.Shell
+$Shortcut = $WshShell.CreateShortcut("$env:USERPROFILE\Desktop\Pairbot.lnk")
+$Shortcut.TargetPath = "cmd.exe"
+$Shortcut.Arguments = '/k cd /d "<absolute-cwd-path>" && <agent> "hello"'
+$Shortcut.WorkingDirectory = "<absolute-cwd-path>"
+$Shortcut.IconLocation = "<absolute-path-to-ironbound\icon.svg>"
+$Shortcut.Save()
+```
+Note: Windows `.lnk` shortcuts support `.ico` files natively. SVG may not render as an icon — if an `icon.ico` exists alongside `icon.svg`, prefer it.
 
 ## Step 2 — Greet
 
