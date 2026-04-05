@@ -13,7 +13,10 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
-const DIST = path.join(require('os').homedir(), '.ironbound-test');
+// CI uses ./dist/ (workflow expects it there), local dev uses ~/.ironbound-test/
+const DIST = process.env.CI
+  ? path.join(ROOT, 'dist')
+  : path.join(require('os').homedir(), '.ironbound-test');
 
 // Clean dist/
 if (fs.existsSync(DIST)) {
