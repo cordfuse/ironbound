@@ -50,4 +50,4 @@ src/
   summarise.ts         # Session tracking and markdown summary generation
 ```
 
-<sub>Built on [IronBound](https://github.com/cordfuseinc/ironbound)</sub>
+<sub>Built on [IronBound](https://github.com/cordfuse/ironbound)</sub>

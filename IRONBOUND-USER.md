@@ -1,4 +1,4 @@
-<!-- IRONBOUND — https://github.com/cordfuseinc/ironbound -->
+<!-- IRONBOUND — https://github.com/cordfuse/ironbound -->
 <!-- Version is defined in version.txt -->
 <!-- WARNING: This file is the engine for your AI agent. Do NOT modify unless you are an IronBound developer. -->
 <!-- Checksum: NONE (dev build — run release workflow to generate) -->

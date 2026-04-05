@@ -50,4 +50,4 @@ src/
   system.ts            # System info, service status, config generation
 ```
 
-<sub>Built on [IronBound](https://github.com/cordfuseinc/ironbound)</sub>
+<sub>Built on [IronBound](https://github.com/cordfuse/ironbound)</sub>

@@ -78,4 +78,4 @@ User-mode tooling (scripts the agent runs on behalf of the user) can be written 
 
 ---
 
-<sub>Built on [IronBound](https://github.com/cordfuseinc/ironbound) — open-source AI agent security</sub>
+<sub>Built on [IronBound](https://github.com/cordfuse/ironbound) — open-source AI agent security</sub>

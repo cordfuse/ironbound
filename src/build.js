@@ -41,7 +41,7 @@ ironbound = ironbound.replace(
 // Stamp version
 ironbound = ironbound.replace(
   /<!-- IRONBOUND — https:\/\/github\.com\/cordfuseinc\/ironbound -->/,
-  `<!-- IRONBOUND v${version} — https://github.com/cordfuseinc/ironbound -->`
+  `<!-- IRONBOUND v${version} — https://github.com/cordfuse/ironbound -->`
 );
 
 fs.writeFileSync(path.join(DIST, 'IRONBOUND.md'), ironbound, 'utf-8');

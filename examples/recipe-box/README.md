@@ -44,4 +44,4 @@ output/                # Saved recipes (gitignored)
 package.json           # Dependencies
 ```
 
-<sub>Built on [IronBound](https://github.com/cordfuseinc/ironbound)</sub>
+<sub>Built on [IronBound](https://github.com/cordfuse/ironbound)</sub>

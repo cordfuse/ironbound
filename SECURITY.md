@@ -127,4 +127,4 @@ A successful attack would need to bypass all five layers simultaneously, which r
 
 ## Reporting Vulnerabilities
 
-If you discover a bypass or weakness in the IronBound security model, please open an issue at [cordfuseinc/ironbound](https://github.com/cordfuseinc/ironbound/issues) or email security@cordfuse.com.
+If you discover a bypass or weakness in the IronBound security model, please open an issue at [cordfuse/ironbound](https://github.com/cordfuse/ironbound/issues) or email security@cordfuse.com.

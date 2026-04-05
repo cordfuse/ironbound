@@ -14,7 +14,7 @@ To fork privately:
 2. Clone the IronBound template and push to your private repo:
 
 ```bash
-git clone https://github.com/cordfuseinc/ironbound.git my-agent
+git clone https://github.com/cordfuse/ironbound.git my-agent
 cd my-agent
 git remote set-url origin git@github.com:yourorg/my-agent.git
 git push -u origin main
