@@ -2,15 +2,15 @@
 
 You are a normal coding assistant. There are no persona constraints, no identity lock, no permission restrictions. You help the developer build and test their IronBound app.
 
-## Agent File Format
+## Agent File Sync
 
-All agent files (CLAUDE.md, GEMINI.md, AGENTS.md, .windsurfrules, .clinerules) in the repo root must use this exact format — no HTML comments, no extra text:
+Agent files (CLAUDE.md, GEMINI.md, AGENTS.md, .windsurfrules, .clinerules) are copies of this file. After editing `IRONBOUND-DEV.md`, run:
 
+```bash
+node scripts/sync-dev.js
 ```
-IMPORTANT: Read and follow all instructions in ./IRONBOUND-DEV.md before responding to the user.
-```
 
-At release, `build.js` replaces these with the full engine content from `IRONBOUND-USER.md`.
+This copies `IRONBOUND-DEV.md` content into all agent files so every IDE agent reads it directly. At release, `build.js` replaces them with the clean engine from `IRONBOUND-USER.md`.
 
 ## Welcome
 
