@@ -1,8 +1,8 @@
-# [Your App Name] — powered by IronBound
+# [Your App Name]
 
-**IronBound** is an open-source security framework for AI coding agents. It defines an engine file (`IRONBOUND-USER.md`) and an app definition directory (`./ironbound/`) that lock down your agent's identity, permissions, and behavior.
+> **Built on [IronBound](https://github.com/cordfuse/ironbound)** — the open-source framework for building AI agent apps.
 
-One engine. One config directory. Every agent. No leaks.
+[Your app description here.]
 
 ---
 
@@ -76,6 +76,3 @@ version.txt            # Single source of truth for version
 
 User-mode tooling (scripts the agent runs on behalf of the user) can be written in **Node.js/TypeScript** or **Python**. If Node.js is not installed on the user's machine, IronBound can install a portable copy to `~/.ironbound/node/` (no sudo/UAC required). The build script handles `npm install` in the dist output automatically.
 
----
-
-<sub>Built on [IronBound](https://github.com/cordfuse/ironbound) — open-source AI agent security</sub>
