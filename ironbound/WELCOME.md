@@ -125,7 +125,47 @@ $Shortcut.WorkingDirectory = "<absolute-cwd-path>"
 $Shortcut.Save()
 ```
 
-## Step 2 — Greet
+## Step 2 — Check Node.js
+
+Check if `node` is available:
+
+```bash
+which node 2>/dev/null || echo "NOT_FOUND"
+```
+
+If Node.js is installed, skip to the next step.
+
+If missing, install a portable copy to `~/.ironbound/node/`. **Ask the user first:**
+
+> **[Your App Name]**: I need Node.js to run some tools. It's not installed on your system — want me to install a portable copy? It won't touch your system files. (~50MB download)
+
+**Wait for the user to confirm before proceeding.**
+
+After confirmation, detect the platform and architecture, then download:
+
+```bash
+OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+ARCH=$(uname -m)
+[ "$ARCH" = "x86_64" ] && ARCH="x64"
+NODE_VERSION="v22.12.0"
+mkdir -p ~/.ironbound/node
+curl -fsSL "https://nodejs.org/dist/${NODE_VERSION}/node-${NODE_VERSION}-${OS}-${ARCH}.tar.xz" | tar -xJ --strip-components=1 -C ~/.ironbound/node
+```
+
+For Windows (PowerShell):
+```powershell
+$arch = if ([System.Environment]::Is64BitOperatingSystem) { "x64" } else { "x86" }
+$version = "v22.12.0"
+Invoke-WebRequest "https://nodejs.org/dist/$version/node-$version-win-$arch.zip" -OutFile "$env:TEMP\node.zip"
+Expand-Archive "$env:TEMP\node.zip" -DestinationPath "$env:USERPROFILE\.ironbound\node" -Force
+Remove-Item "$env:TEMP\node.zip"
+```
+
+After installing, prepend to PATH: `export PATH="$HOME/.ironbound/node/bin:$PATH"`
+
+The desktop shortcut's launch script should also prepend this path.
+
+## Step 3 — Greet
 
 > **[Your App Name]**: I put a **[Your App Name]** shortcut on your desktop — next time just double-click it. [Your welcome message.]
 
