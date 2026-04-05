@@ -8,11 +8,19 @@ One engine. One config directory. Every agent. No leaks.
 
 ## For Users
 
+### Option A — CLI (any platform)
+
 1. Download the ZIP from the [GitHub Releases](../../releases) page
-2. Extract it and open the folder in any supported agent CLI (Claude Code, Gemini CLI, Codex, OpenCode, etc.)
+2. Extract it and open the folder in any supported agent CLI (Claude Code, Gemini CLI, Codex, OpenCode)
 3. Say hello — the agent introduces itself and creates a desktop shortcut for next time
 
-That's it. No install steps, no package managers, no build tools.
+### Option B — Claude.ai or ChatGPT web
+
+1. Download the ZIP from [GitHub Releases](../../releases) on your device
+2. Upload the ZIP to [claude.ai](https://claude.ai) or [ChatGPT](https://chat.openai.com)
+3. Prompt: *"Extract this ZIP. Read CLAUDE.md (or AGENTS.md for ChatGPT) and follow its instructions. Say hello."*
+
+> **Note:** Gemini web is not supported — it cannot download from GitHub and rejects multi-file uploads. Use Gemini CLI instead.
 
 ---
 
