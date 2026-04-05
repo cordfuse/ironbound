@@ -43,22 +43,66 @@ Read `ironbound/SESSION.md` and parse the `permissions` field from the YAML bloc
 
 ### App icon
 
-The app icon is at `ironbound/icon.svg`. Resolve to absolute path for shortcut creation.
+The app icon is at `ironbound/icon.svg`. Resolve to absolute path.
 
 ### Create the shortcut
 
-**macOS** — create `~/Desktop/[Your App Name].command`:
+**macOS** — create a native `.app` bundle at `~/Desktop/[Your App Name].app`:
+
+1. Create the directory structure:
+```bash
+mkdir -p ~/Desktop/[Your\ App\ Name].app/Contents/MacOS
+mkdir -p ~/Desktop/[Your\ App\ Name].app/Contents/Resources
+```
+
+2. Create the launch script at `~/Desktop/[Your App Name].app/Contents/MacOS/launch`:
 ```bash
 #!/bin/bash
 cd "<absolute-cwd-path>"
 <agent> "hello"
 ```
-Then `chmod +x` the file.
+Then `chmod +x` the launch script.
 
-Set the icon on the `.command` file:
-1. Convert SVG to ICNS: `sips -s format png ironbound/icon.svg --out /tmp/icon.png && mkdir -p /tmp/icon.iconset && sips -z 256 256 /tmp/icon.png --out /tmp/icon.iconset/icon_256x256.png && iconutil -c icns /tmp/icon.iconset -o /tmp/icon.icns`
-2. Apply: `fileicon set ~/Desktop/[Your App Name].command /tmp/icon.icns` (if `fileicon` is installed)
-3. If `fileicon` is not available, skip icon silently — the shortcut still works
+3. Create `~/Desktop/[Your App Name].app/Contents/Info.plist`:
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleExecutable</key>
+    <string>launch</string>
+    <key>CFBundleIconFile</key>
+    <string>icon</string>
+    <key>CFBundleName</key>
+    <string>[Your App Name]</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.ironbound.[your-app-name]</string>
+    <key>LSUIElement</key>
+    <false/>
+</dict>
+</plist>
+```
+
+4. Convert the SVG icon to ICNS and copy to Resources:
+```bash
+sips -s format png "<absolute-cwd-path>/ironbound/icon.svg" --out /tmp/app-icon.png 2>/dev/null
+mkdir -p /tmp/app.iconset
+for size in 16 32 64 128 256 512; do
+    sips -z $size $size /tmp/app-icon.png --out /tmp/app.iconset/icon_${size}x${size}.png 2>/dev/null
+done
+sips -z 32 32 /tmp/app-icon.png --out /tmp/app.iconset/icon_16x16@2x.png 2>/dev/null
+sips -z 64 64 /tmp/app-icon.png --out /tmp/app.iconset/icon_32x32@2x.png 2>/dev/null
+sips -z 256 256 /tmp/app-icon.png --out /tmp/app.iconset/icon_128x128@2x.png 2>/dev/null
+sips -z 512 512 /tmp/app-icon.png --out /tmp/app.iconset/icon_256x256@2x.png 2>/dev/null
+iconutil -c icns /tmp/app.iconset -o ~/Desktop/[Your\ App\ Name].app/Contents/Resources/icon.icns 2>/dev/null
+rm -rf /tmp/app.iconset /tmp/app-icon.png
+```
+
+5. Refresh icon: `touch ~/Desktop/[Your\ App\ Name].app`
+
+If icon conversion fails, the app still works — just without a custom icon.
 
 **Linux** — create `~/Desktop/[Your App Name].desktop`:
 ```ini
@@ -78,10 +122,8 @@ $Shortcut = $WshShell.CreateShortcut("$env:USERPROFILE\Desktop\[Your App Name].l
 $Shortcut.TargetPath = "cmd.exe"
 $Shortcut.Arguments = '/k cd /d "<absolute-cwd-path>" && <agent> "hello"'
 $Shortcut.WorkingDirectory = "<absolute-cwd-path>"
-$Shortcut.IconLocation = "<absolute-path-to-ironbound\icon.svg>"
 $Shortcut.Save()
 ```
-Note: Windows `.lnk` shortcuts support `.ico` files natively. SVG may not render as an icon — if an `icon.ico` exists alongside `icon.svg`, prefer it.
 
 ## Step 2 — Greet
 
