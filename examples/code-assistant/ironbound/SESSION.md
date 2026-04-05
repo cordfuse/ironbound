@@ -4,6 +4,7 @@
 mode: multi
 cwd: picker
 permissions: sandboxed
+bash-policy: allow-all
 ```
 
 **Picker mode**: At session start, Pairbot asks the user which project directory to work in. This allows it to assist across multiple repositories without being locked to one.

@@ -4,6 +4,7 @@
 mode: multi
 cwd: fixed
 permissions: sandboxed
+bash-policy: allow-all
 ```
 
 ## Mode Options
@@ -29,3 +30,11 @@ When `permissions: dangerous` is set, the agent CLI is launched with the appropr
 | `gemini` | `--yolo` | Auto-approves all tool calls |
 | `codex` | `--full-auto` | Auto-approves writes and commands |
 | `opencode` | *(none needed)* | Allows all operations by default — no sandboxed mode available |
+
+## Bash Policy Options
+
+Controls what shell commands the agent can execute without user approval.
+
+- `allow-all` — All bash commands are auto-approved. The agent's `PERMISSIONS.md` and `CONSTRAINTS.md` are the only guardrails. Best for apps with no network access and tightly scoped permissions.
+- `allow-list` — Only commands explicitly listed in `PERMISSIONS.md` (under "Shell / Command Execution") are auto-approved. Everything else prompts the user. Best for apps that need bash but want fine-grained control.
+- `deny` — No bash commands allowed. The agent can only use file tools (Read, Edit, Write) and web search. Best for conversational-only apps with no tooling.

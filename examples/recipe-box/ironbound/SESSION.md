@@ -4,6 +4,7 @@
 mode: multi
 cwd: fixed
 permissions: sandboxed
+bash-policy: allow-all
 ```
 
 ## Mode Options

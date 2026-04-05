@@ -123,7 +123,7 @@ if (!fs.existsSync(outputDir)) {
   fs.writeFileSync(path.join(outputDir, '.gitkeep'), '', 'utf-8');
 }
 
-// --- Step 8: Copy agent-specific configs from ironbound/agents/ ---
+// --- Step 8: Copy agent configs and apply bash-policy ---
 const agentsDir = path.join(ROOT, 'ironbound', 'agents');
 if (fs.existsSync(agentsDir)) {
   for (const entry of fs.readdirSync(agentsDir, { withFileTypes: true })) {
@@ -134,6 +134,48 @@ if (fs.existsSync(agentsDir)) {
       console.log(`  Copied ironbound/agents/${entry.name}/ → dist/.${entry.name}/`);
     }
   }
+}
+
+// Parse bash-policy from SESSION.md
+const sessionPath = path.join(ROOT, 'ironbound', 'SESSION.md');
+let bashPolicy = 'allow-all';
+if (fs.existsSync(sessionPath)) {
+  const sessionContent = fs.readFileSync(sessionPath, 'utf-8');
+  const match = sessionContent.match(/bash-policy:\s*([\w-]+)/);
+  if (match) bashPolicy = match[1];
+}
+console.log(`  Bash policy: ${bashPolicy}`);
+
+// Apply bash-policy to Claude settings
+const claudeSettingsPath = path.join(DIST, '.claude', 'settings.json');
+if (fs.existsSync(claudeSettingsPath)) {
+  const settings = JSON.parse(fs.readFileSync(claudeSettingsPath, 'utf-8'));
+
+  // Remove any existing Bash rules
+  settings.permissions.allow = settings.permissions.allow.filter(r => !r.startsWith('Bash'));
+
+  if (bashPolicy === 'allow-all') {
+    settings.permissions.allow.push('Bash(*)');
+  } else if (bashPolicy === 'allow-list') {
+    // Parse allowed commands from PERMISSIONS.md
+    const permPath = path.join(ROOT, 'ironbound', 'PERMISSIONS.md');
+    if (fs.existsSync(permPath)) {
+      const permContent = fs.readFileSync(permPath, 'utf-8');
+      const shellSection = permContent.match(/## Shell \/ Command Execution\n([\s\S]*?)(?=\n##|\n>|$)/);
+      if (shellSection) {
+        const cmds = shellSection[1].match(/`([^`]+)`/g);
+        if (cmds) {
+          for (const cmd of cmds) {
+            const clean = cmd.replace(/`/g, '').split(' — ')[0].trim();
+            settings.permissions.allow.push(`Bash(${clean}:*)`);
+          }
+        }
+      }
+    }
+  }
+  // deny = no Bash rules added
+
+  fs.writeFileSync(claudeSettingsPath, JSON.stringify(settings, null, 2) + '\n', 'utf-8');
 }
 
 
