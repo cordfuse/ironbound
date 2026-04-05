@@ -51,9 +51,11 @@ echo -n "your-secret-passphrase" | shasum -a 256 | awk '{print $1}' > ~/.ironbou
 ```
 IRONBOUND-USER.md      # The engine — loads ./ironbound/, handles dev mode, integrity
 IRONBOUND-DEV.md       # Dev workflow — build, test user mode, spawn agent CLI
-CLAUDE.md              # Points to IRONBOUND-DEV.md (dev mode)
-GEMINI.md              # Points to IRONBOUND-DEV.md (dev mode)
-AGENTS.md              # Points to IRONBOUND-DEV.md (dev mode)
+CLAUDE.md              # One-liner → IRONBOUND-DEV.md (dev) or IRONBOUND.md (release)
+GEMINI.md              # Same
+AGENTS.md              # Same
+.windsurfrules         # Same
+.clinerules            # Same
 ironbound/
   IDENTITY.md          # Agent name, personality, tone
   PERMISSIONS.md       # Whitelist of permitted operations
