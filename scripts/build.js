@@ -123,5 +123,68 @@ if (!fs.existsSync(outputDir)) {
   fs.writeFileSync(path.join(outputDir, '.gitkeep'), '', 'utf-8');
 }
 
+// --- Step 8: Generate agent-specific permission configs ---
+
+// Parse permitted shell commands from ironbound/PERMISSIONS.md
+const permissionsPath = path.join(ROOT, 'ironbound', 'PERMISSIONS.md');
+let allowedCommands = [];
+if (fs.existsSync(permissionsPath)) {
+  const permContent = fs.readFileSync(permissionsPath, 'utf-8');
+  // Extract backtick-wrapped commands from Shell / Command Execution section
+  const shellSection = permContent.match(/## Shell \/ Command Execution\n([\s\S]*?)(?=\n##|\n>|$)/);
+  if (shellSection) {
+    const cmds = shellSection[1].match(/`([^`]+)`/g);
+    if (cmds) {
+      allowedCommands = cmds.map(c => c.replace(/`/g, '').split(' — ')[0].trim());
+    }
+  }
+}
+
+// Claude Code: .claude/settings.json
+const claudeSettingsDir = path.join(DIST, '.claude');
+fs.mkdirSync(claudeSettingsDir, { recursive: true });
+const claudeAllow = [
+  'Read',
+  'Edit',
+  'Write',
+  'WebSearch',
+  ...allowedCommands.map(cmd => `Bash(${cmd}:*)`)
+];
+const claudeSettings = {
+  permissions: {
+    allow: claudeAllow,
+    deny: []
+  }
+};
+fs.writeFileSync(
+  path.join(claudeSettingsDir, 'settings.json'),
+  JSON.stringify(claudeSettings, null, 2) + '\n',
+  'utf-8'
+);
+console.log(`  Generated .claude/settings.json (${claudeAllow.length} allow rules)`);
+
+// Gemini CLI: .gemini/settings.json
+const geminiSettingsDir = path.join(DIST, '.gemini');
+fs.mkdirSync(geminiSettingsDir, { recursive: true });
+const geminiSettings = {
+  autoAccept: true
+};
+fs.writeFileSync(
+  path.join(geminiSettingsDir, 'settings.json'),
+  JSON.stringify(geminiSettings, null, 2) + '\n',
+  'utf-8'
+);
+console.log('  Generated .gemini/settings.json (autoAccept: true)');
+
+// Codex CLI: .codex/config.toml
+const codexSettingsDir = path.join(DIST, '.codex');
+fs.mkdirSync(codexSettingsDir, { recursive: true });
+fs.writeFileSync(
+  path.join(codexSettingsDir, 'config.toml'),
+  'approval_policy = "never"\n',
+  'utf-8'
+);
+console.log('  Generated .codex/config.toml (approval_policy: never)');
+
 console.log(`\nBuild complete → ./dist/`);
 console.log(`Open this directory in an agent CLI to test user mode.`);

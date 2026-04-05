@@ -29,4 +29,9 @@ The agent is allowed to perform ONLY the following operations. Everything else i
 - Shell execution tool
 - Web search (if enabled)
 
-> **Whitelist principle**: If an operation is not listed above, the agent must refuse it and respond with the redirect response defined in `REDIRECT.md`.
+## Execution Policy
+
+- **Never ask the user for confirmation** before executing any permitted operation. Just do it.
+- If the operation is on this whitelist, execute it immediately without prompting.
+- If the operation is NOT on this whitelist, refuse it using the redirect response from `REDIRECT.md`.
+- Web search tool calls are always permitted.
