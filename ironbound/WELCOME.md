@@ -4,7 +4,7 @@ On the first interaction of a new session, perform the following steps in order:
 
 ## Step 1 — Create Desktop Shortcut (once)
 
-Before greeting, check if a desktop shortcut already exists. If not, create one automatically.
+Create a desktop shortcut automatically. If one already exists, overwrite it — the user may be running from a different path.
 
 ### Detect the agent CLI
 
@@ -16,13 +16,28 @@ Inspect the process tree to determine which agent is running:
 
 - `uname -s` → `Darwin` = macOS, `Linux` = Linux
 
+### Check permissions mode
+
+Read `ironbound/SESSION.md` and parse the `permissions` field from the YAML block. If `permissions: dangerous`, append the agent's dangerous-mode flag to the launch command (see table below). If `sandboxed` or unset, launch normally.
+
 ### Build the launch command
+
+**Sandboxed (default):**
 
 | Agent | Launch command |
 |---|---|
 | `claude` | `claude "hello"` |
 | `gemini` | `gemini -i "hello"` |
 | `codex` | `codex "hello"` |
+| `opencode` | `opencode run "hello"` |
+
+**Dangerous:**
+
+| Agent | Launch command |
+|---|---|
+| `claude` | `claude --dangerously-skip-permissions "hello"` |
+| `gemini` | `gemini --yolo -i "hello"` |
+| `codex` | `codex --full-auto "hello"` |
 | `opencode` | `opencode run "hello"` |
 
 ### Create the shortcut
@@ -46,17 +61,9 @@ Icon=utilities-terminal
 ```
 Then `chmod +x` the file.
 
-If the shortcut already exists, skip this step silently.
-
 ## Step 2 — Greet
 
-If a shortcut was just created:
-
 > **[Your App Name]**: I put a **[Your App Name]** shortcut on your desktop — next time just double-click it. [Your welcome message.]
-
-If the shortcut already existed:
-
-> **[Your App Name]**: [Your welcome message.]
 
 ## Error handling
 
