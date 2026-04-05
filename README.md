@@ -75,7 +75,7 @@ version.txt            # Single source of truth for version
 
 ### User-mode tooling
 
-User-mode tooling (scripts the agent runs on behalf of the user) should be written in **Python** for cross-platform compatibility. Python is available on macOS, Linux, and Windows without additional installation. Avoid Node.js/npm dependencies in the user-facing build unless your app specifically requires them.
+User-mode tooling (scripts the agent runs on behalf of the user) can be written in **Node.js/TypeScript** or **Python**. If Node.js is not installed on the user's machine, IronBound can install a portable copy to `~/.ironbound/node/` (no sudo/UAC required). The build script handles `npm install` in the dist output automatically.
 
 ---
 

@@ -11,6 +11,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 
 const ROOT = path.resolve(__dirname, '..');
 // CI uses ./dist/ (workflow expects it there), local dev uses ~/.ironbound-test/
@@ -103,12 +104,20 @@ if (fs.existsSync(srcDir)) {
 }
 
 // --- Step 6: Copy other shipping files ---
-const copyFiles = ['README.md', 'LICENSE', 'version.txt', '.gitignore'];
+const copyFiles = ['README.md', 'LICENSE', 'version.txt', '.gitignore', 'package.json'];
 for (const file of copyFiles) {
   const srcPath = path.join(ROOT, file);
   if (fs.existsSync(srcPath)) {
     fs.copyFileSync(srcPath, path.join(DIST, file));
   }
+}
+
+// --- Step 6b: Install npm dependencies in dist ---
+const distPkgJson = path.join(DIST, 'package.json');
+if (fs.existsSync(distPkgJson)) {
+
+  execSync('npm install --production', { cwd: DIST, stdio: 'pipe' });
+  console.log('  Installed npm dependencies in dist');
 }
 
 // --- Step 7: Create output/.gitkeep if output dir pattern is used ---
@@ -175,7 +184,6 @@ if (fs.existsSync(claudeSettingsPath)) {
 
 
 // --- Step 9: Initialize git so agents recognize .claude/settings.json ---
-const { execSync } = require('child_process');
 execSync('git init', { cwd: DIST, stdio: 'ignore' });
 console.log('  Initialized git (required for agent config discovery)');
 
