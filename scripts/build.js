@@ -137,5 +137,10 @@ if (fs.existsSync(agentsDir)) {
 }
 
 
-console.log(`\nBuild complete → ./dist/`);
+// --- Step 9: Initialize git so agents recognize .claude/settings.json ---
+const { execSync } = require('child_process');
+execSync('git init', { cwd: DIST, stdio: 'ignore' });
+console.log('  Initialized git (required for agent config discovery)');
+
+console.log(`\nBuild complete → ${DIST}`);
 console.log(`Open this directory in an agent CLI to test user mode.`);
