@@ -69,12 +69,13 @@ fs.writeFileSync(path.join(DIST, 'IRONBOUND.md'), finalIronbound, 'utf-8');
 fs.writeFileSync(path.join(DIST, '.ironbound-checksum'), hash + '\n', 'utf-8');
 console.log(`  Checksum: ${hash}`);
 
-// --- Step 3: Sync agent files from clean IRONBOUND.md ---
+// --- Step 3: Write one-liner agent files pointing to IRONBOUND.md ---
 const agentFiles = ['CLAUDE.md', 'GEMINI.md', 'AGENTS.md', '.windsurfrules', '.clinerules'];
+const agentOneLiner = 'IMPORTANT: Read and follow all instructions in ./IRONBOUND.md before responding to the user.\n';
 for (const file of agentFiles) {
-  fs.writeFileSync(path.join(DIST, file), finalIronbound, 'utf-8');
+  fs.writeFileSync(path.join(DIST, file), agentOneLiner, 'utf-8');
 }
-console.log(`  Synced agent files: ${agentFiles.join(', ')}`);
+console.log(`  Wrote one-liner agent files: ${agentFiles.join(', ')}`);
 
 // --- Step 4: Copy ironbound/ app definition directory ---
 function copyDirRecursive(src, dest) {

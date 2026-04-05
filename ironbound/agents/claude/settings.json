@@ -17,7 +17,7 @@
       "Edit(AGENTS.md)",
       "Edit(.windsurfrules)",
       "Edit(.clinerules)",
-      "Edit(scripts/**)",
+      "Edit(src/**)",
       "Write(ironbound/**)",
       "Write(IRONBOUND*)",
       "Write(CLAUDE.md)",
@@ -25,7 +25,7 @@
       "Write(AGENTS.md)",
       "Write(.windsurfrules)",
       "Write(.clinerules)",
-      "Write(scripts/**)"
+      "Write(src/**)"
     ]
   }
 }

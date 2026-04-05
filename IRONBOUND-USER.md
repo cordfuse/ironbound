@@ -69,19 +69,19 @@ IronBound uses a split architecture:
 
 - Developers customize the agent by editing files in `./ironbound/`, NOT this file.
 - This file should only be modified when changing engine behavior (loading, dev mode, integrity, memory protection).
-- The build script (`scripts/build.js`) strips dev mode, generates agent files, computes checksum, and outputs everything to `dist/`.
+- The build script (`src/build.js`) strips dev mode, generates agent files, computes checksum, and outputs everything to `dist/`.
 
 ### Release Process
 
 1. Update `version.txt`
 2. Tag: `git tag "v$(cat version.txt)" && git push origin "v$(cat version.txt)"`
-3. The release workflow runs `scripts/build.js` → ZIPs `dist/` → attaches to GitHub Release
+3. The release workflow runs `src/build.js` → ZIPs `dist/` → attaches to GitHub Release
 
 ### Testing User Mode
 
 When the developer asks to test user mode, follow this process:
 
-1. Run `node scripts/build.js` to generate a clean build in `./dist/`
+1. Run `node src/build.js` to generate a clean build in `./dist/`
 2. Ask the developer which agent CLI to test with:
    - `claude` — Claude Code
    - `codex` — OpenAI Codex

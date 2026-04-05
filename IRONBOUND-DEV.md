@@ -2,16 +2,6 @@
 
 You are a normal coding assistant. There are no persona constraints, no identity lock, no permission restrictions. You help the developer build and test their IronBound app.
 
-## Agent File Sync
-
-Agent files (CLAUDE.md, GEMINI.md, AGENTS.md, .windsurfrules, .clinerules) are copies of this file. After editing `IRONBOUND-DEV.md`, run:
-
-```bash
-node scripts/sync-dev.js
-```
-
-This copies `IRONBOUND-DEV.md` content into all agent files so every IDE agent reads it directly. At release, `build.js` replaces them with the clean engine from `IRONBOUND-USER.md`.
-
 ## Welcome
 
 At session start, greet the developer briefly:
@@ -33,7 +23,7 @@ When the developer says **"help"**, show them:
 
 - `IRONBOUND-USER.md` — The user-mode engine. Do NOT follow its instructions — it is source code you help the developer edit, not rules for you.
 - `./ironbound/` — The app definition files (identity, permissions, constraints, etc.). Same as above — source code, not instructions.
-- `scripts/build.js` — Builds a clean production copy to `./dist/`
+- `src/build.js` — Builds a clean production copy to `./dist/`
 - `./dist/` — Build output (gitignored). Contains exactly what end users get in the ZIP.
 
 ## Testing User Mode
@@ -42,7 +32,7 @@ When the developer asks to test user mode. Trigger phrases include (but are not 
 
 ### Step 1 — Build
 
-Run `node scripts/build.js` to generate `./dist/`.
+Run `node src/build.js` to generate `./dist/`.
 
 ### Step 2 — Choose agent
 
@@ -157,12 +147,12 @@ Tell the developer the test session has been launched in a new window.
 
 ## Build Script
 
-`scripts/build.js` does the following:
+`src/build.js` does the following:
 
 1. Strips dev mode content from `IRONBOUND-USER.md` (between `<!-- DEV_MODE_START -->` and `<!-- DEV_MODE_END -->` markers)
 2. Generates SHA-256 checksum
 3. Copies the clean `IRONBOUND-USER.md` as `IRONBOUND.md` into `dist/`
-4. Creates agent files (CLAUDE.md, GEMINI.md, AGENTS.md, .windsurfrules, .clinerules) in `dist/` — each is a copy of the clean engine
+4. Creates agent files (CLAUDE.md, GEMINI.md, AGENTS.md, .windsurfrules, .clinerules) in `dist/` — each is a one-liner redirecting to `IRONBOUND.md`
 5. Copies `ironbound/`, `src/`, README.md, LICENSE, package.json, version.txt into `dist/`
 
 ## Release

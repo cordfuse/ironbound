@@ -37,13 +37,13 @@ mkdir -p ~/.ironbound
 echo -n "your-secret-passphrase" | shasum -a 256 | awk '{print $1}' > ~/.ironbound/dev.hash
 ```
 
-4. Test user mode: `node scripts/build.js` — opens the built output in `~/.ironbound-test/`
+4. Test user mode: `node src/build.js` — opens the built output in `~/.ironbound-test/`
 5. Tag a release (`v$(cat version.txt)`) — CI builds and publishes a ZIP to GitHub Releases
 
 ### How It Works
 
 - **During development**, agent files (CLAUDE.md, GEMINI.md, etc.) point to `IRONBOUND-DEV.md` — your IDE agent reads dev workflow instructions with no persona constraints.
-- **At build time**, `scripts/build.js` generates production output — `IRONBOUND-USER.md` becomes `IRONBOUND.md` (stripped of dev mode sections), agent files are synced from it, and a checksum is embedded.
+- **At build time**, `src/build.js` generates production output — `IRONBOUND-USER.md` becomes `IRONBOUND.md` (stripped of dev mode sections), agent files are synced from it, and a checksum is embedded.
 - **Dev mode sections** in `IRONBOUND-USER.md` (between `<!-- DEV_MODE_START -->` and `<!-- DEV_MODE_END -->`) are stripped automatically in production builds.
 
 ### Project Structure
@@ -64,9 +64,8 @@ ironbound/
   MEMORY.md            # Memory scopes and write rules
   icon.svg             # App icon (used for desktop shortcut)
   agents/              # Per-agent config (e.g., .claude/settings.json)
-scripts/
+src/
   build.js             # Builds production output — strips dev mode, generates checksums
-  sync-dev.js          # Syncs IRONBOUND-DEV.md to all agent files
 .github/workflows/
   release.yml          # CI: runs build.js, ZIPs output, publishes GitHub Release
 examples/              # Example agent configurations (recipe-box, os-manager, code-assistant)
