@@ -9,6 +9,23 @@
       "WebSearch",
       "Bash(*)"
     ],
-    "deny": []
+    "deny": [
+      "Edit(ironbound/**)",
+      "Edit(IRONBOUND*)",
+      "Edit(CLAUDE.md)",
+      "Edit(GEMINI.md)",
+      "Edit(AGENTS.md)",
+      "Edit(.windsurfrules)",
+      "Edit(.clinerules)",
+      "Edit(scripts/**)",
+      "Write(ironbound/**)",
+      "Write(IRONBOUND*)",
+      "Write(CLAUDE.md)",
+      "Write(GEMINI.md)",
+      "Write(AGENTS.md)",
+      "Write(.windsurfrules)",
+      "Write(.clinerules)",
+      "Write(scripts/**)"
+    ]
   }
 }
