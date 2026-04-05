@@ -1,4 +1,4 @@
-# Your App Name — powered by IronBound
+# [Your App Name] — powered by IronBound
 
 **IronBound** is an open-source security framework for AI coding agents. It defines an engine file (`IRONBOUND-USER.md`) and an app definition directory (`./ironbound/`) that lock down your agent's identity, permissions, and behavior.
 
@@ -8,17 +8,11 @@ One engine. One config directory. Every agent. No leaks.
 
 ## For Users
 
-### Option A: Use with AgentBox (GUI)
+1. Download the ZIP from the [GitHub Releases](../../releases) page
+2. Extract it and open the folder in any supported agent CLI (Claude Code, Gemini CLI, Codex, OpenCode, etc.)
+3. Say hello — the agent introduces itself and creates a desktop shortcut for next time
 
-> *AgentBox is a planned companion app. This section will be updated when it launches.*
-
-1. Download AgentBox from [cordfuseinc/agentbox](https://github.com/cordfuseinc/agentbox)
-2. Open your project folder
-3. AgentBox detects `IRONBOUND-USER.md` and `./ironbound/` and configures your agent automatically
-
-### Option B: Use with CLI / Cowork
-
-Download the ZIP from the GitHub Release page, extract it, and open the folder in any supported agent (Claude Desktop, Cowork, Gemini CLI, etc.). The agent files inside the ZIP are pre-configured.
+That's it. No install steps, no package managers, no build tools.
 
 ---
 
@@ -26,8 +20,8 @@ Download the ZIP from the GitHub Release page, extract it, and open the folder i
 
 ### Fork and Customize
 
-1. **Fork this repo** as a private repository (your `IRONBOUND-USER.md` contains dev mode architecture notes)
-2. Edit files in `./ironbound/` to configure your agent — do NOT edit `IRONBOUND-USER.md` directly
+1. **Fork this repo** as a private repository
+2. Edit files in `./ironbound/` to define your agent's identity, permissions, constraints, and behavior
 3. Set up your dev hash so the agent knows you're the developer:
 
 ```bash
@@ -35,39 +29,45 @@ mkdir -p ~/.ironbound
 echo -n "your-secret-passphrase" | shasum -a 256 | awk '{print $1}' > ~/.ironbound/dev.hash
 ```
 
-4. To test user mode: run `node scripts/build.js` → open `dist/` in an agent CLI
-5. Tag a release (e.g., `v$(cat version.txt)`) — the release workflow builds `dist/`, ZIPs it, and publishes to GitHub Releases
+4. Test user mode: `node scripts/build.js` — opens the built output in `~/.ironbound-test/`
+5. Tag a release (`v$(cat version.txt)`) — CI builds and publishes a ZIP to GitHub Releases
 
 ### How It Works
 
-- **Agent files point to `IRONBOUND-DEV.md`** — during development, your IDE agent reads dev workflow instructions (build, test, deploy). No persona constraints while coding.
-- **`scripts/build.js`** generates everything into `dist/` — `IRONBOUND-USER.md` becomes `IRONBOUND.md` (stripped of dev mode), agent files are synced from it, checksum generated. This is what ships in the ZIP.
-- **Dev mode** sections in `IRONBOUND-USER.md` (between `<!-- DEV_MODE_START -->` and `<!-- DEV_MODE_END -->`) are stripped from `dist/` builds automatically.
+- **During development**, agent files (CLAUDE.md, GEMINI.md, etc.) point to `IRONBOUND-DEV.md` — your IDE agent reads dev workflow instructions with no persona constraints.
+- **At build time**, `scripts/build.js` generates production output — `IRONBOUND-USER.md` becomes `IRONBOUND.md` (stripped of dev mode sections), agent files are synced from it, and a checksum is embedded.
+- **Dev mode sections** in `IRONBOUND-USER.md` (between `<!-- DEV_MODE_START -->` and `<!-- DEV_MODE_END -->`) are stripped automatically in production builds.
 
 ### Project Structure
 
 ```
 IRONBOUND-USER.md      # The engine — loads ./ironbound/, handles dev mode, integrity
 IRONBOUND-DEV.md       # Dev workflow — build, test user mode, spawn agent CLI
-CLAUDE.md              # One-liner pointing to IRONBOUND-DEV.md (dev mode)
+CLAUDE.md              # Points to IRONBOUND-DEV.md (dev mode)
+GEMINI.md              # Points to IRONBOUND-DEV.md (dev mode)
+AGENTS.md              # Points to IRONBOUND-DEV.md (dev mode)
 ironbound/
   IDENTITY.md          # Agent name, personality, tone
   PERMISSIONS.md       # Whitelist of permitted operations
   CONSTRAINTS.md       # Exhaustive blacklist of forbidden operations
-  WELCOME.md           # Welcome flow and greeting
+  WELCOME.md           # Welcome flow, desktop shortcut, greeting
   REDIRECT.md          # Canned response for denied requests
   SESSION.md           # Session mode and CWD mode
   MEMORY.md            # Memory scopes and write rules
+  icon.svg             # App icon (used for desktop shortcut)
+  agents/              # Per-agent config (e.g., .claude/settings.json)
 scripts/
-  build.js             # Builds dist/ — strips dev mode, generates agent files + checksum
+  build.js             # Builds production output — strips dev mode, generates checksums
+  sync-dev.js          # Syncs IRONBOUND-DEV.md to all agent files
 .github/workflows/
-  release.yml          # CI: runs build.js, ZIPs dist/, publishes GitHub Release
-examples/              # Example agent configurations
+  release.yml          # CI: runs build.js, ZIPs output, publishes GitHub Release
+examples/              # Example agent configurations (recipe-box, os-manager, code-assistant)
 version.txt            # Single source of truth for version
 ```
 
-See [DEVELOPER.md](DEVELOPER.md) for full fork documentation.
-See [SECURITY.md](SECURITY.md) for the security model.
+### User-mode tooling
+
+User-mode tooling (scripts the agent runs on behalf of the user) should be written in **Python** for cross-platform compatibility. Python is available on macOS, Linux, and Windows without additional installation. Avoid Node.js/npm dependencies in the user-facing build unless your app specifically requires them.
 
 ---
 

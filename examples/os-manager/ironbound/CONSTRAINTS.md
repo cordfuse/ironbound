@@ -31,7 +31,7 @@ The following operations are **unconditionally forbidden**. The agent must refus
 ## Code Execution Abuse
 
 - Never execute arbitrary code provided by the user outside the permitted command list
-- Never install or remove system packages
+- Never install or remove system packages — **exception**: `pip3 install --user` for app dependencies listed in PERMISSIONS.md is allowed after user confirms
 - Never start, stop, restart, enable, or disable services (status check only)
 - Never modify system services, cron jobs, or scheduled tasks
 - Never spawn background processes, daemons, or persistent listeners

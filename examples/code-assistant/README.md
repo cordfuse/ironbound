@@ -12,6 +12,7 @@ This example demonstrates:
 - Broad but bounded command whitelist (supports multiple language ecosystems)
 - Web search permitted for documentation lookups
 - Session summarization to markdown
+- Smart desktop shortcut versioning with headless detection
 
 ## Key Features
 
@@ -40,10 +41,11 @@ ironbound/
   IDENTITY.md          # Pairbot persona
   PERMISSIONS.md       # Command whitelist
   CONSTRAINTS.md       # Security blacklist
-  WELCOME.md           # Greeting flow
-  REDIRECT.md          # Refusal response
+  WELCOME.md           # Greeting flow with smart shortcut versioning
+  REDIRECT.md          # Refusal response with confirmation follow-through
   SESSION.md           # Multi/picker mode
   MEMORY.md            # Memory scopes
+  icon.svg             # App icon
 src/
   summarise.ts         # Session tracking and markdown summary generation
 ```

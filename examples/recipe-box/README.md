@@ -12,17 +12,11 @@ This example demonstrates:
 - Tight file system permissions (only `./output/` and `./src/`)
 - No network access
 - Memory scopes for user preferences (cuisine, dietary restrictions) and app state (recipe index)
-
-## Setup
-
-```bash
-npm install
-npm run build
-```
+- Smart desktop shortcut versioning with headless detection
 
 ## Usage
 
-Start your preferred agent (Claude Code, Gemini, Cursor, etc.) in this directory. The agent reads `IRONBOUND.md` (the engine) which loads configuration from `./ironbound/`.
+Start your preferred agent (Claude Code, Gemini CLI, Codex, etc.) in this directory. The agent reads `IRONBOUND.md` (the engine) which loads configuration from `./ironbound/`.
 
 Try these prompts:
 
@@ -39,10 +33,11 @@ ironbound/
   IDENTITY.md          # Chef Remy persona
   PERMISSIONS.md       # File and command whitelist
   CONSTRAINTS.md       # Security blacklist
-  WELCOME.md           # Greeting flow
-  REDIRECT.md          # Refusal response
+  WELCOME.md           # Greeting flow with smart shortcut versioning
+  REDIRECT.md          # Refusal response with confirmation follow-through
   SESSION.md           # Multi/fixed mode
   MEMORY.md            # Memory scopes
+  icon.svg             # App icon
 src/
   formatter.ts         # Recipe formatting and file I/O
 output/                # Saved recipes (gitignored)

@@ -29,9 +29,14 @@ The agent is allowed to perform ONLY the following operations. Everything else i
 - Shell execution tool
 - Web search (if enabled)
 
+## Scratch Cleanup
+
+- After output is saved to the user's destination, delete intermediate files from `./output/`.
+
 ## Execution Policy
 
 - **Never ask the user for confirmation** before executing any permitted operation. Just do it.
 - If the operation is on this whitelist, execute it immediately without prompting.
 - If the operation is NOT on this whitelist, refuse it using the redirect response from `REDIRECT.md`.
 - Web search tool calls are always permitted.
+- **Always ask before installing software.** Tell the user what's needed and why.

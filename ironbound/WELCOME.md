@@ -2,9 +2,24 @@
 
 On the first interaction of a new session, perform the following steps in order:
 
-## Step 1 — Create Desktop Shortcut (once)
+## Step 1 — Desktop Shortcut (smart versioning)
 
-Create a desktop shortcut automatically. If one already exists, overwrite it — the user may be running from a different path.
+### Detect headless environment
+
+Before creating any shortcut, check if the environment has a desktop:
+
+```bash
+# macOS — check if Desktop directory exists and has contents
+ls ~/Desktop/ >/dev/null 2>&1
+# Linux — check for display server
+echo "${DISPLAY}${WAYLAND_DISPLAY}"
+```
+
+- **macOS**: If `ls ~/Desktop/` fails, skip shortcut creation entirely.
+- **Linux**: If both `$DISPLAY` and `$WAYLAND_DISPLAY` are empty, skip shortcut creation entirely.
+- **Windows**: Always attempt (Windows always has a desktop).
+
+If headless, skip to Step 3 (greet without mentioning the shortcut).
 
 ### Detect the agent CLI
 
@@ -41,9 +56,49 @@ Read `ironbound/SESSION.md` and parse the `permissions` field from the YAML bloc
 | `codex` | `codex --full-auto "hello"` |
 | `opencode` | `opencode run "hello"` |
 
+### Read version and path
+
+```bash
+VERSION=$(cat version.txt 2>/dev/null || echo "unknown")
+CWD=$(pwd)
+```
+
+These values are used for smart versioning (see below).
+
 ### App icon
 
 The app icon is at `ironbound/icon.svg`. Resolve to absolute path.
+
+### Smart shortcut versioning
+
+Before creating or rebuilding, check if an existing shortcut already matches the current version and path. This avoids unnecessary rebuilds.
+
+**macOS** — read metadata from the .app bundle's Info.plist:
+```bash
+EXISTING_VERSION=$(defaults read ~/Desktop/[Your\ App\ Name].app/Contents/Info.plist IronBoundVersion 2>/dev/null)
+EXISTING_PATH=$(defaults read ~/Desktop/[Your\ App\ Name].app/Contents/Info.plist IronBoundPath 2>/dev/null)
+```
+
+**Linux** — grep metadata from the .desktop file:
+```bash
+EXISTING_VERSION=$(grep '^X-IronBound-Version=' ~/Desktop/[Your\ App\ Name].desktop 2>/dev/null | cut -d= -f2)
+EXISTING_PATH=$(grep '^X-IronBound-Path=' ~/Desktop/[Your\ App\ Name].desktop 2>/dev/null | cut -d= -f2)
+```
+
+**Windows** — read the Description field from the .lnk file (pipe-delimited `IronBound|version|path`):
+```powershell
+$WshShell = New-Object -ComObject WScript.Shell
+$Existing = $WshShell.CreateShortcut("$env:USERPROFILE\Desktop\[Your App Name].lnk")
+$Meta = $Existing.Description -split '\|'
+$ExistingVersion = $Meta[1]
+$ExistingPath = $Meta[2]
+```
+
+### Decision logic
+
+- **Shortcut does not exist** → create it, tell the user in the greeting
+- **Shortcut exists and version + path match** → skip silently (no rebuild, no mention)
+- **Shortcut exists but version or path changed** → rebuild silently (no mention in greeting)
 
 ### Create the shortcut
 
@@ -58,12 +113,11 @@ mkdir -p ~/Desktop/[Your\ App\ Name].app/Contents/Resources
 2. Create the launch script at `~/Desktop/[Your App Name].app/Contents/MacOS/launch`:
 ```bash
 #!/bin/bash
-cd "<absolute-cwd-path>"
-<agent> "hello"
+osascript -e 'tell app "Terminal" to do script "cd \"<absolute-cwd-path>\" && <agent> \"hello\""'
 ```
 Then `chmod +x` the launch script.
 
-3. Create `~/Desktop/[Your App Name].app/Contents/Info.plist`:
+3. Create `~/Desktop/[Your App Name].app/Contents/Info.plist` with version and path metadata:
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -81,6 +135,10 @@ Then `chmod +x` the launch script.
     <string>com.ironbound.[your-app-name]</string>
     <key>LSUIElement</key>
     <false/>
+    <key>IronBoundVersion</key>
+    <string><version></string>
+    <key>IronBoundPath</key>
+    <string><absolute-cwd-path></string>
 </dict>
 </plist>
 ```
@@ -104,7 +162,7 @@ rm -rf /tmp/app.iconset /tmp/app-icon.png
 
 If icon conversion fails, the app still works — just without a custom icon.
 
-**Linux** — create `~/Desktop/[Your App Name].desktop`:
+**Linux** — create `~/Desktop/[Your App Name].desktop` with version and path metadata:
 ```ini
 [Desktop Entry]
 Type=Application
@@ -112,16 +170,19 @@ Name=[Your App Name]
 Exec=bash -c 'cd "<absolute-cwd-path>" && <agent> "hello"'
 Terminal=true
 Icon=<absolute-path-to-ironbound/icon.svg>
+X-IronBound-Version=<version>
+X-IronBound-Path=<absolute-cwd-path>
 ```
 Then `chmod +x` the file.
 
-**Windows** — create a shortcut on the desktop using PowerShell:
+**Windows** — create a shortcut on the desktop using PowerShell with metadata in the Description field:
 ```powershell
 $WshShell = New-Object -ComObject WScript.Shell
 $Shortcut = $WshShell.CreateShortcut("$env:USERPROFILE\Desktop\[Your App Name].lnk")
 $Shortcut.TargetPath = "cmd.exe"
 $Shortcut.Arguments = '/k cd /d "<absolute-cwd-path>" && <agent> "hello"'
 $Shortcut.WorkingDirectory = "<absolute-cwd-path>"
+$Shortcut.Description = "IronBound|<version>|<absolute-cwd-path>"
 $Shortcut.Save()
 ```
 
@@ -167,7 +228,15 @@ The desktop shortcut's launch script should also prepend this path.
 
 ## Step 3 — Greet
 
+The greeting depends on what happened with the shortcut:
+
+**First creation (shortcut was just created for the first time):**
 > **[Your App Name]**: I put a **[Your App Name]** shortcut on your desktop — next time just double-click it. [Your welcome message.]
+
+**Shortcut already matched (skipped) or rebuilt silently or headless environment:**
+> **[Your App Name]**: [Your welcome message.]
+
+Only mention the shortcut when it is newly created for the first time.
 
 ## Error handling
 

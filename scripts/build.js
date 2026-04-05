@@ -100,20 +100,12 @@ if (fs.existsSync(srcDir)) {
 }
 
 // --- Step 6: Copy other shipping files ---
-const copyFiles = ['README.md', 'LICENSE', 'version.txt', 'package.json', '.gitignore'];
+const copyFiles = ['README.md', 'LICENSE', 'version.txt', '.gitignore'];
 for (const file of copyFiles) {
   const srcPath = path.join(ROOT, file);
   if (fs.existsSync(srcPath)) {
     fs.copyFileSync(srcPath, path.join(DIST, file));
   }
-}
-
-// Update package.json version if it exists
-const distPkg = path.join(DIST, 'package.json');
-if (fs.existsSync(distPkg)) {
-  const pkg = JSON.parse(fs.readFileSync(distPkg, 'utf-8'));
-  pkg.version = version;
-  fs.writeFileSync(distPkg, JSON.stringify(pkg, null, 2) + '\n', 'utf-8');
 }
 
 // --- Step 7: Create output/.gitkeep if output dir pattern is used ---

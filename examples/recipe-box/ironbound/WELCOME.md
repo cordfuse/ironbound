@@ -2,9 +2,24 @@
 
 On the first interaction of a new session, perform the following steps in order:
 
-## Step 1 — Create Desktop Shortcut (once)
+## Step 1 — Desktop Shortcut (smart versioning)
 
-Create a desktop shortcut automatically. If one already exists, overwrite it — the user may be running from a different path.
+### Detect headless environment
+
+Before creating any shortcut, check if the environment has a desktop:
+
+```bash
+# macOS — check if Desktop directory exists and has contents
+ls ~/Desktop/ >/dev/null 2>&1
+# Linux — check for display server
+echo "${DISPLAY}${WAYLAND_DISPLAY}"
+```
+
+- **macOS**: If `ls ~/Desktop/` fails, skip shortcut creation entirely.
+- **Linux**: If both `$DISPLAY` and `$WAYLAND_DISPLAY` are empty, skip shortcut creation entirely.
+- **Windows**: Always attempt (Windows always has a desktop).
+
+If headless, skip to Step 2 (greet without mentioning the shortcut).
 
 ### Detect the agent CLI
 
@@ -41,26 +56,113 @@ Read `ironbound/SESSION.md` and parse the `permissions` field from the YAML bloc
 | `codex` | `codex --full-auto "hello"` |
 | `opencode` | `opencode run "hello"` |
 
+### Read version and path
+
+```bash
+VERSION=$(cat version.txt 2>/dev/null || echo "unknown")
+CWD=$(pwd)
+```
+
+These values are used for smart versioning (see below).
+
 ### App icon
 
 The app icon is at `ironbound/icon.svg`. Resolve to absolute path for shortcut creation.
 
+### Smart shortcut versioning
+
+Before creating or rebuilding, check if an existing shortcut already matches the current version and path. This avoids unnecessary rebuilds.
+
+**macOS** — read metadata from the .app bundle's Info.plist:
+```bash
+EXISTING_VERSION=$(defaults read ~/Desktop/Chef\ Remy.app/Contents/Info.plist IronBoundVersion 2>/dev/null)
+EXISTING_PATH=$(defaults read ~/Desktop/Chef\ Remy.app/Contents/Info.plist IronBoundPath 2>/dev/null)
+```
+
+**Linux** — grep metadata from the .desktop file:
+```bash
+EXISTING_VERSION=$(grep '^X-IronBound-Version=' ~/Desktop/Chef\ Remy.desktop 2>/dev/null | cut -d= -f2)
+EXISTING_PATH=$(grep '^X-IronBound-Path=' ~/Desktop/Chef\ Remy.desktop 2>/dev/null | cut -d= -f2)
+```
+
+**Windows** — read the Description field from the .lnk file (pipe-delimited `IronBound|version|path`):
+```powershell
+$WshShell = New-Object -ComObject WScript.Shell
+$Existing = $WshShell.CreateShortcut("$env:USERPROFILE\Desktop\Chef Remy.lnk")
+$Meta = $Existing.Description -split '\|'
+$ExistingVersion = $Meta[1]
+$ExistingPath = $Meta[2]
+```
+
+### Decision logic
+
+- **Shortcut does not exist** → create it, tell the user in the greeting
+- **Shortcut exists and version + path match** → skip silently (no rebuild, no mention)
+- **Shortcut exists but version or path changed** → rebuild silently (no mention in greeting)
+
 ### Create the shortcut
 
-**macOS** — create `~/Desktop/Chef Remy.command`:
+**macOS** — create a native `.app` bundle at `~/Desktop/Chef Remy.app`:
+
+1. Create the directory structure:
+```bash
+mkdir -p ~/Desktop/Chef\ Remy.app/Contents/MacOS
+mkdir -p ~/Desktop/Chef\ Remy.app/Contents/Resources
+```
+
+2. Create the launch script at `~/Desktop/Chef Remy.app/Contents/MacOS/launch`:
 ```bash
 #!/bin/bash
-cd "<absolute-cwd-path>"
-<agent> "hello"
+osascript -e 'tell app "Terminal" to do script "cd \"<absolute-cwd-path>\" && <agent> \"hello\""'
 ```
-Then `chmod +x` the file.
+Then `chmod +x` the launch script.
 
-Set the icon on the `.command` file:
-1. Convert SVG to ICNS: `sips -s format png ironbound/icon.svg --out /tmp/icon.png && mkdir -p /tmp/icon.iconset && sips -z 256 256 /tmp/icon.png --out /tmp/icon.iconset/icon_256x256.png && iconutil -c icns /tmp/icon.iconset -o /tmp/icon.icns`
-2. Apply: `fileicon set ~/Desktop/Chef Remy.command /tmp/icon.icns` (if `fileicon` is installed)
-3. If `fileicon` is not available, skip icon silently — the shortcut still works
+3. Create `~/Desktop/Chef Remy.app/Contents/Info.plist` with version and path metadata:
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleExecutable</key>
+    <string>launch</string>
+    <key>CFBundleIconFile</key>
+    <string>icon</string>
+    <key>CFBundleName</key>
+    <string>Chef Remy</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.ironbound.chef-remy</string>
+    <key>LSUIElement</key>
+    <false/>
+    <key>IronBoundVersion</key>
+    <string><version></string>
+    <key>IronBoundPath</key>
+    <string><absolute-cwd-path></string>
+</dict>
+</plist>
+```
 
-**Linux** — create `~/Desktop/Chef Remy.desktop`:
+4. Convert the SVG icon to ICNS and copy to Resources:
+```bash
+sips -s format png "<absolute-cwd-path>/ironbound/icon.svg" --out /tmp/app-icon.png 2>/dev/null
+mkdir -p /tmp/app.iconset
+for size in 16 32 64 128 256 512; do
+    sips -z $size $size /tmp/app-icon.png --out /tmp/app.iconset/icon_${size}x${size}.png 2>/dev/null
+done
+sips -z 32 32 /tmp/app-icon.png --out /tmp/app.iconset/icon_16x16@2x.png 2>/dev/null
+sips -z 64 64 /tmp/app-icon.png --out /tmp/app.iconset/icon_32x32@2x.png 2>/dev/null
+sips -z 256 256 /tmp/app-icon.png --out /tmp/app.iconset/icon_128x128@2x.png 2>/dev/null
+sips -z 512 512 /tmp/app-icon.png --out /tmp/app.iconset/icon_256x256@2x.png 2>/dev/null
+iconutil -c icns /tmp/app.iconset -o ~/Desktop/Chef\ Remy.app/Contents/Resources/icon.icns 2>/dev/null
+rm -rf /tmp/app.iconset /tmp/app-icon.png
+```
+
+5. Refresh icon: `touch ~/Desktop/Chef\ Remy.app`
+
+If icon conversion fails, the app still works — just without a custom icon.
+
+**Linux** — create `~/Desktop/Chef Remy.desktop` with version and path metadata:
 ```ini
 [Desktop Entry]
 Type=Application
@@ -68,24 +170,33 @@ Name=Chef Remy
 Exec=bash -c 'cd "<absolute-cwd-path>" && <agent> "hello"'
 Terminal=true
 Icon=<absolute-path-to-ironbound/icon.svg>
+X-IronBound-Version=<version>
+X-IronBound-Path=<absolute-cwd-path>
 ```
 Then `chmod +x` the file.
 
-**Windows** — create a shortcut on the desktop using PowerShell:
+**Windows** — create a shortcut on the desktop using PowerShell with metadata in the Description field:
 ```powershell
 $WshShell = New-Object -ComObject WScript.Shell
 $Shortcut = $WshShell.CreateShortcut("$env:USERPROFILE\Desktop\Chef Remy.lnk")
 $Shortcut.TargetPath = "cmd.exe"
 $Shortcut.Arguments = '/k cd /d "<absolute-cwd-path>" && <agent> "hello"'
 $Shortcut.WorkingDirectory = "<absolute-cwd-path>"
-$Shortcut.IconLocation = "<absolute-path-to-ironbound\icon.svg>"
+$Shortcut.Description = "IronBound|<version>|<absolute-cwd-path>"
 $Shortcut.Save()
 ```
-Note: Windows `.lnk` shortcuts support `.ico` files natively. SVG may not render as an icon — if an `icon.ico` exists alongside `icon.svg`, prefer it.
 
 ## Step 2 — Greet
 
+The greeting depends on what happened with the shortcut:
+
+**First creation (shortcut was just created for the first time):**
 > **Chef Remy**: I put a **Chef Remy** shortcut on your desktop — next time just double-click it. Hey there! I'm Chef Remy, your recipe assistant. Tell me what you're craving and I'll help you turn it into a beautiful recipe card. What are we cooking today?
+
+**Shortcut already matched (skipped) or rebuilt silently or headless environment:**
+> **Chef Remy**: Hey there! I'm Chef Remy, your recipe assistant. Tell me what you're craving and I'll help you turn it into a beautiful recipe card. What are we cooking today?
+
+Only mention the shortcut when it is newly created for the first time.
 
 ## Error handling
 
