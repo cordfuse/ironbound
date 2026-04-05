@@ -4,6 +4,8 @@
       "Read",
       "Edit",
       "Write",
+      "Glob",
+      "Grep",
       "WebSearch",
       "Bash(npm install:*)",
       "Bash(npm run build:*)",
@@ -17,7 +19,16 @@
       "Bash(mkdir:*)",
       "Bash(cp:*)",
       "Bash(mv:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(test:*)",
+      "Bash(ps:*)",
+      "Bash(uname:*)",
+      "Bash(chmod:*)",
+      "Bash(sips:*)",
+      "Bash(iconutil:*)",
+      "Bash(fileicon:*)",
+      "Bash(which:*)",
+      "Bash(command:*)"
     ],
     "deny": []
   }

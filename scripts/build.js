@@ -13,7 +13,7 @@ const fs = require('fs');
 const path = require('path');
 
 const ROOT = path.resolve(__dirname, '..');
-const DIST = path.join(ROOT, 'dist');
+const DIST = path.join(require('os').homedir(), '.ironbound-test');
 
 // Clean dist/
 if (fs.existsSync(DIST)) {
@@ -135,6 +135,7 @@ if (fs.existsSync(agentsDir)) {
     }
   }
 }
+
 
 console.log(`\nBuild complete → ./dist/`);
 console.log(`Open this directory in an agent CLI to test user mode.`);
