@@ -1,6 +1,6 @@
 # IronBound
 
-Build and distribute AI agent apps using the user's own Claude, Gemini, or OpenAI subscription. Zero API costs. Fully TOS-compliant.
+Build and distribute AI agent apps that run on the user's existing Claude, Gemini, or OpenAI account. No API keys to set up. No extra costs to the developer or the user.
 
 Define your agent's identity, permissions, constraints, memory, and welcome flow in a handful of `.md` files. Ship it as a ZIP or a platform installer. Users open it in Claude Code, Gemini CLI, Codex, or OpenCode — or upload the ZIP to claude.ai or Claude mobile. The agent introduces itself, creates a desktop shortcut, and just works.
 
