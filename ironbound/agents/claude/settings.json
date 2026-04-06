@@ -2,8 +2,8 @@
   "permissions": {
     "allow": [
       "Read",
-      "Edit",
-      "Write",
+      "Edit(output/**)",
+      "Write(output/**)",
       "Glob",
       "Grep",
       "WebSearch",
@@ -18,6 +18,13 @@
       "Edit(.windsurfrules)",
       "Edit(.clinerules)",
       "Edit(src/**)",
+      "Edit(package.json)",
+      "Edit(version.txt)",
+      "Edit(README.md)",
+      "Edit(LICENSE)",
+      "Edit(.gitignore)",
+      "Edit(.github/**)",
+      "Edit(DEV-GUIDE.md)",
       "Write(ironbound/**)",
       "Write(IRONBOUND*)",
       "Write(CLAUDE.md)",
@@ -25,7 +32,14 @@
       "Write(AGENTS.md)",
       "Write(.windsurfrules)",
       "Write(.clinerules)",
-      "Write(src/**)"
+      "Write(src/**)",
+      "Write(package.json)",
+      "Write(version.txt)",
+      "Write(README.md)",
+      "Write(LICENSE)",
+      "Write(.gitignore)",
+      "Write(.github/**)",
+      "Write(DEV-GUIDE.md)"
     ]
   }
 }
