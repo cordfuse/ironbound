@@ -1,26 +1,31 @@
-# [Your App Name]
+# IronBound
 
-> **Built on [IronBound](https://github.com/cordfuse/ironbound)** — the open-source framework for building AI agent apps.
+Build and distribute AI agent apps using the user's own Claude, Gemini, or OpenAI subscription. Zero API costs. Fully TOS-compliant.
 
-[Your app description here.]
+Define your agent's identity, permissions, constraints, memory, and welcome flow in a handful of `.md` files. Ship it as a ZIP or a platform installer. Users open it in Claude Code, Gemini CLI, Codex, or OpenCode — or upload the ZIP to claude.ai or Claude mobile. The agent introduces itself, creates a desktop shortcut, and just works.
+
+**See it in action:** [Chef Remy](https://github.com/cordfuse/ironbound-chefremy) — an AI recipe assistant built entirely with IronBound.
+
+**Fork this repo to build your own.**
 
 ---
 
 ## For Users
 
-### Option A — CLI (any platform)
+### CLI (any platform)
 
-1. Download the ZIP from the [GitHub Releases](../../releases) page
-2. Extract it and open the folder in any supported agent CLI (Claude Code, Gemini CLI, Codex, OpenCode)
-3. Say hello — the agent introduces itself and creates a desktop shortcut for next time
+1. Download the ZIP from the app's GitHub Releases page
+2. Extract and open the folder in Claude Code, Gemini CLI, Codex, or OpenCode
+3. Say hello — the agent introduces itself and creates a desktop shortcut
 
-### Option B — Claude.ai or ChatGPT web
+### Claude.ai or ChatGPT web
 
-1. Download the ZIP from [GitHub Releases](../../releases) on your device
-2. Upload the ZIP to [claude.ai](https://claude.ai) or [ChatGPT](https://chat.openai.com)
-3. Prompt: *"Extract this ZIP. Read CLAUDE.md (or AGENTS.md for ChatGPT) and follow its instructions. Say hello."*
+1. Download the ZIP on your device
+2. Upload it to [claude.ai](https://claude.ai) or [ChatGPT](https://chat.openai.com)
+3. Prompt: *"Extract this ZIP. Read CLAUDE.md and follow its instructions. Say hello."*
+   (Use AGENTS.md for ChatGPT)
 
-> **Note:** Gemini web is not supported — it cannot download from GitHub and rejects multi-file uploads. Use Gemini CLI instead.
+> Gemini web is not supported — use Gemini CLI instead.
 
 ---
 
@@ -28,23 +33,27 @@
 
 ### Fork and Customize
 
-1. **Fork this repo** as a private repository
-2. Edit files in `./ironbound/` to define your agent's identity, permissions, constraints, and behavior
-3. Dev mode is implicit — if you're in the repo with `IRONBOUND-DEV.md`, you're in dev mode. No setup needed.
-4. Test user mode: `node src/build.js` — opens the built output in `~/.ironbound-test/`
-5. Tag a release (`v$(cat version.txt)`) — CI builds and publishes a ZIP to GitHub Releases
+1. Fork this repo
+2. Edit files in `./ironbound/` to define your agent
+3. Say `guide` on first dev session — the agent walks you through setup step by step
+4. Say `demo` to test user mode — builds and launches the locked persona in a new terminal
+5. Tag a release (`v$(cat version.txt)`) — CI builds and publishes a ZIP
+
+Dev mode is implicit — if you're in the repo with `IRONBOUND-DEV.md`, you're in dev mode. No setup needed.
 
 ### How It Works
 
-- **During development**, agent files (CLAUDE.md, GEMINI.md, etc.) point to `IRONBOUND-DEV.md` — your IDE agent reads dev workflow instructions with no persona constraints.
-- **At build time**, `src/build.js` generates production output — `IRONBOUND-USER.md` becomes `IRONBOUND.md` (stripped of dev mode sections), agent files are synced from it, and a checksum is embedded.
-- **Dev mode sections** in `IRONBOUND-USER.md` (between `<!-- DEV_MODE_START -->` and `<!-- DEV_MODE_END -->`) are stripped automatically in production builds.
+- **During development**, agent files point to `IRONBOUND-DEV.md` — no persona constraints while coding
+- **At build time**, `src/build.js` strips dev mode, generates agent files and checksums
+- **In production**, the user's agent reads `IRONBOUND.md` → `ironbound/*.md` — locked persona, scoped permissions
+- **Memory** persists to `~/.ironbound/{app-name}/` — not the agent's native memory system
 
 ### Project Structure
 
 ```
-IRONBOUND-USER.md      # The engine — loads ./ironbound/, handles dev mode, integrity
-IRONBOUND-DEV.md       # Dev workflow — build, test user mode, spawn agent CLI
+IRONBOUND-USER.md      # Engine — loads ./ironbound/, stripped in release builds
+IRONBOUND-DEV.md       # Dev workflow — build, test, spawn agent CLI
+DEV-GUIDE.md           # Guided first-time setup walkthrough
 CLAUDE.md              # One-liner → IRONBOUND-DEV.md (dev) or IRONBOUND.md (release)
 GEMINI.md              # Same
 AGENTS.md              # Same
@@ -53,22 +62,39 @@ AGENTS.md              # Same
 ironbound/
   IDENTITY.md          # Agent name, personality, tone
   PERMISSIONS.md       # Whitelist of permitted operations
-  CONSTRAINTS.md       # Exhaustive blacklist of forbidden operations
-  WELCOME.md           # Welcome flow, desktop shortcut, greeting
+  CONSTRAINTS.md       # Exhaustive blacklist
+  WELCOME.md           # Welcome flow — installer detection, shortcut, greeting
   REDIRECT.md          # Canned response for denied requests
-  SESSION.md           # Session mode and CWD mode
+  SESSION.md           # Session mode, CWD mode, bash policy, update config
   MEMORY.md            # Memory scopes and write rules
-  icon.svg             # App icon (used for desktop shortcut)
-  agents/              # Per-agent config (e.g., .claude/settings.json)
+  icon.svg             # App icon (desktop shortcut)
+  agents/              # Per-agent permission configs
 src/
-  build.js             # Builds production output — strips dev mode, generates checksums
+  build.js             # Builds production output
 .github/workflows/
-  release.yml          # CI: runs build.js, ZIPs output, publishes GitHub Release
-examples/              # Example agent configurations (recipe-box, os-manager, code-assistant)
+  release.yml          # CI: build, ZIP, publish to GitHub Releases
+examples/              # Example apps (recipe-box, os-manager, code-assistant)
 version.txt            # Single source of truth for version
 ```
 
+> **Template placeholders:** `[Your App Name]` and `[Your Company]` in the ironbound/ files are meant to be replaced when you fork. They are intentional — this is a template.
+
 ### User-mode tooling
 
-User-mode tooling (scripts the agent runs on behalf of the user) can be written in **Node.js/TypeScript** or **Python**. If Node.js is not installed on the user's machine, IronBound can install a portable copy to `~/.ironbound/node/` (no sudo/UAC required). The build script handles `npm install` in the dist output automatically.
+User-mode scripts can be **Node.js/TypeScript** or **Python**. If Node.js is missing, IronBound installs a portable copy to `~/.ironbound/node/` (no sudo/UAC). The build script handles `npm install` automatically.
 
+---
+
+## Showcase
+
+Apps built on IronBound:
+
+| App | Description |
+|---|---|
+| [Chef Remy](https://github.com/cordfuse/ironbound-chefremy) | AI recipe assistant — weather-aware, taste memory, cookbook PDFs |
+
+*Built something with IronBound? Open a PR to add it here.*
+
+---
+
+<sub>[IronBound](https://github.com/cordfuse/ironbound) is maintained by [Cordfuse](https://github.com/cordfuse).</sub>
