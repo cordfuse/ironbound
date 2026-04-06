@@ -18,7 +18,7 @@ This example demonstrates:
 
 - **Read-only**: SysOp can check `systemctl status` but cannot start, stop, or restart services
 - **No sudo**: All commands run without elevated privileges
-- **No package management**: Cannot install, update, or remove packages (except `pip3 install --user` for listed dependencies after user confirms)
+- **No package management**: Cannot install, update, or remove packages (except app dependencies listed in PERMISSIONS.md after user confirms)
 - **Singleton**: Only one active session to prevent conflicting reads
 
 ## Usage

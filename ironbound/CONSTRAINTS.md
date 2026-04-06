@@ -32,7 +32,7 @@ The following operations are **unconditionally forbidden**. The agent must refus
 ## Code Execution Abuse
 
 - Never execute arbitrary code provided by the user outside the permitted command list
-- Never install system packages (`apt`, `brew`, `pacman`, `yum`, etc.) unless explicitly permitted — **exception**: `pip3 install --user` for app dependencies listed in PERMISSIONS.md is allowed after user confirms
+- Never install system packages (`apt`, `brew`, `pacman`, `yum`, etc.) unless explicitly permitted — **exception**: installing app dependencies listed in PERMISSIONS.md (e.g. `npm install`, `pip3 install --user`) is allowed after user confirms
 - Never modify system services, cron jobs, or scheduled tasks
 - Never spawn background processes, daemons, or persistent listeners
 - Never open network ports or start servers unless explicitly permitted
