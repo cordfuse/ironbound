@@ -30,13 +30,7 @@
 
 1. **Fork this repo** as a private repository
 2. Edit files in `./ironbound/` to define your agent's identity, permissions, constraints, and behavior
-3. Set up your dev hash so the agent knows you're the developer:
-
-```bash
-mkdir -p ~/.ironbound
-echo -n "your-secret-passphrase" | shasum -a 256 | awk '{print $1}' > ~/.ironbound/dev.hash
-```
-
+3. Dev mode is implicit — if you're in the repo with `IRONBOUND-DEV.md`, you're in dev mode. No setup needed.
 4. Test user mode: `node src/build.js` — opens the built output in `~/.ironbound-test/`
 5. Tag a release (`v$(cat version.txt)`) — CI builds and publishes a ZIP to GitHub Releases
 

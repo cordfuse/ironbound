@@ -5,6 +5,10 @@ mode: multi
 cwd: fixed
 permissions: sandboxed
 bash-policy: allow-all
+update:
+  enabled: false
+  repo: owner/repo-name
+  check: on-session-start
 ```
 
 ## Mode Options
@@ -38,3 +42,11 @@ Controls what shell commands the agent can execute without user approval.
 - `allow-all` — All bash commands are auto-approved. The agent's `PERMISSIONS.md` and `CONSTRAINTS.md` are the only guardrails. Best for apps with no network access and tightly scoped permissions.
 - `allow-list` — Only commands explicitly listed in `PERMISSIONS.md` (under "Shell / Command Execution") are auto-approved. Everything else prompts the user. Best for apps that need bash but want fine-grained control.
 - `deny` — No bash commands allowed. The agent can only use file tools (Read, Edit, Write) and web search. Best for conversational-only apps with no tooling.
+
+## Update Options
+
+- `enabled` — `true` or `false`. When true, the agent checks for updates at session start via the GitHub Releases API. Default: `false`.
+- `repo` — The GitHub repository in `owner/repo-name` format. Used to construct the API URL.
+- `check` — When to check. Currently only `on-session-start` is supported.
+
+See `WELCOME.md` for the full update check flow, including skip conditions (installer-managed, Homebrew-managed) and offline handling.

@@ -1,8 +1,67 @@
 # Welcome Flow
 
+**Network calls in the welcome flow (weather check, update check) must never block session start. Apply a 5-second timeout to all network requests and skip silently if unreachable.**
+
 On the first interaction of a new session, perform the following steps in order:
 
-## Step 1 — Desktop Shortcut (smart versioning)
+## Step 1 — Pre-flight checks
+
+### Check for installer flag
+
+If `~/.ironbound/{app-name}/.installed` exists, the app was installed via a platform installer. Skip:
+- Node.js check (installer handled it)
+- Desktop shortcut creation (installer handled it)
+- Go straight to greeting
+
+`{app-name}` is a placeholder the developer replaces with their app's identifier.
+
+### Capture agent PID
+
+Write the agent's PID to a file so installers can gracefully terminate during updates:
+
+macOS / Linux:
+```bash
+mkdir -p ~/.ironbound/{app-name}
+echo $PPID > ~/.ironbound/{app-name}/.pid
+```
+
+Windows:
+```powershell
+$agentPid = (Get-Process -Id $PID).Parent.Id
+$agentPid | Out-File "$env:USERPROFILE\.ironbound\{app-name}\.pid"
+```
+
+This runs silently on every session start.
+
+### Singleton mode enforcement (if mode: singleton)
+
+Read `ironbound/SESSION.md`. If `mode: singleton`:
+
+1. Check lock file at `~/.ironbound/{app-name}/.lock`
+2. If lock exists:
+   a. Read PID from lock
+   b. Check if PID is still running (`kill -0` on unix, `Get-Process` on Windows)
+   c. Still running → refuse to start: "[App Name] is already running. Please use the existing session."
+   d. Not running (stale lock) → delete lock, proceed
+3. If no lock → write `$PPID` to lock file, proceed
+4. At session end → delete lock file
+
+If `mode: multi` → skip this check entirely.
+
+### Check for updates (if enabled)
+
+Read `ironbound/SESSION.md` and check if `update.enabled` is true. If so:
+
+1. Skip if `.installed` flag exists (installer owns update lifecycle)
+2. Skip if Homebrew manages the install (check for `/opt/homebrew/Cellar/{app-name}` or `/usr/local/Cellar/{app-name}`)
+3. Fetch latest version: `curl -s https://api.github.com/repos/{owner}/{repo}/releases/latest` (timeout 5 seconds)
+4. Compare `tag_name` against local `version.txt`
+5. If newer version exists, ask the user:
+   "[App Name]: A new version is available (vX.Y.Z). Want me to download and apply the update? I'll restart automatically when done."
+6. If user confirms: download ZIP from release assets, extract over current directory, restart agent
+7. If offline or API fails: skip silently, never block session start
+
+## Step 2 — Desktop Shortcut (smart versioning)
 
 ### Detect headless environment
 
@@ -19,13 +78,26 @@ echo "${DISPLAY}${WAYLAND_DISPLAY}"
 - **Linux**: If both `$DISPLAY` and `$WAYLAND_DISPLAY` are empty, skip shortcut creation entirely.
 - **Windows**: Always attempt (Windows always has a desktop).
 
-If headless, skip to Step 3 (greet without mentioning the shortcut).
+If headless, skip to Step 4 (greet without mentioning the shortcut).
 
 ### Detect the agent CLI
 
 Inspect the process tree to determine which agent is running:
 - Look for `claude`, `gemini`, `codex`, or `opencode` in the parent process chain
 - Use `ps -o comm= -p $PPID` or walk up the tree as needed
+
+### Agent binary path
+
+Never rely on PATH to resolve the agent CLI. Store the full binary path at first detection:
+
+macOS / Linux:
+```bash
+AGENT_BIN=$(which <agent>)
+mkdir -p ~/.ironbound/{app-name}
+echo '{"agent": "<agent>", "bin": "'$AGENT_BIN'"}' > ~/.ironbound/{app-name}/config.json
+```
+
+The desktop shortcut launch command and all subsequent invocations should use the stored path from `config.json` rather than the agent name directly.
 
 ### Detect the OS
 
@@ -186,7 +258,7 @@ $Shortcut.Description = "IronBound|<version>|<absolute-cwd-path>"
 $Shortcut.Save()
 ```
 
-## Step 2 — Check Node.js
+## Step 3 — Check Node.js
 
 Check if `node` is available:
 
@@ -226,7 +298,7 @@ After installing, prepend to PATH: `export PATH="$HOME/.ironbound/node/bin:$PATH
 
 The desktop shortcut's launch script should also prepend this path.
 
-## Step 3 — Greet
+## Step 4 — Greet
 
 The greeting depends on what happened with the shortcut:
 

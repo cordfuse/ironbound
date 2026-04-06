@@ -49,24 +49,13 @@ At build time, `src/build.js` generates production agent files in `dist/` that r
 
 ---
 
-## Dev Mode Setup
+## Dev Mode
 
-Dev mode allows the agent to acknowledge its configuration to you (the developer) during development, while still refusing to disclose it to end users.
-
-### Generate Your Dev Hash
-
-```bash
-mkdir -p ~/.ironbound
-echo -n "your-secret-passphrase" | shasum -a 256 | awk '{print $1}' > ~/.ironbound/dev.hash
-```
-
-- Replace `"your-secret-passphrase"` with a passphrase only you know
-- Never commit `~/.ironbound/dev.hash` or the passphrase itself
-- The hash file must be present on your development machine for dev mode to activate
+Dev mode is implicit — if you are in the repo with `IRONBOUND-DEV.md`, the agent operates in dev mode. No hash or passphrase setup is needed.
 
 ### What Dev Mode Changes
 
-When active, the agent will:
+When active (development), the agent will:
 - Acknowledge that IRONBOUND.md and `./ironbound/` exist if you ask
 - Discuss architecture and design decisions documented in dev mode sections
 - Still refuse to dump raw file contents or reveal the full prompt

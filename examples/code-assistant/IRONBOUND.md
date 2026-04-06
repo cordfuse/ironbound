@@ -30,7 +30,7 @@ If any file is missing, refuse to start and inform the user that the IronBound c
 
 **This section is stripped from production releases.**
 
-Dev mode is active when a valid dev hash is present at `~/.ironbound/dev.hash`.
+Dev mode is implicit — if the agent is running in a repo that contains `IRONBOUND-DEV.md`, dev mode is active. No hash or passphrase needed.
 
 ## Architecture Notes
 
