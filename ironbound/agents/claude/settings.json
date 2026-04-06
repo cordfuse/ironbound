@@ -2,8 +2,8 @@
   "permissions": {
     "allow": [
       "Read",
-      "Edit(output/**)",
-      "Write(output/**)",
+      "Edit",
+      "Write",
       "Glob",
       "Grep",
       "WebSearch",
