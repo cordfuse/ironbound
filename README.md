@@ -4,7 +4,7 @@ Build and distribute AI agent apps that run on the user's existing Claude, Gemin
 
 Define your agent's identity, permissions, constraints, memory, and welcome flow in a handful of `.md` files. Ship it as a ZIP or a platform installer. Users open it in Claude Code, Gemini CLI, Codex, or OpenCode — or upload the ZIP to claude.ai or Claude mobile. The agent introduces itself, creates a desktop shortcut, and just works.
 
-**See it in action:** [ToneAI](https://github.com/steve-krisjanovs/toneai-nux-qr-ironbound) — an AI guitar tone assistant that generates NUX MightyAmp QR presets for any song, album, or artist.
+**See it in action:** [ToneAI](https://github.com/steve-krisjanovs/toneai-nux-qr-ironbound) · [Chef Remy](https://github.com/cordfuse/ironbound-chefremy)
 
 **Fork this repo to build your own.**
 
@@ -92,6 +92,7 @@ Apps built on IronBound:
 | App | Description |
 |---|---|
 | [ToneAI](https://github.com/steve-krisjanovs/toneai-nux-qr-ironbound) | AI guitar tone assistant — NUX MightyAmp QR presets for any song, album, or artist |
+| [Chef Remy](https://github.com/cordfuse/ironbound-chefremy) | AI recipe assistant — weather-aware, taste memory, cookbook PDFs |
 
 *Built something with IronBound? Open a PR to add it here.*
 
