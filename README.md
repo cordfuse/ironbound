@@ -29,14 +29,19 @@ Define your agent's identity, permissions, constraints, memory, and welcome flow
 
 ### Not supported
 
-Web/mobile chat clients (Claude.ai chat, Claude Projects, ChatGPT, Gemini web) are **not viable distribution targets** for IronBound apps. Tested across all four 2026-05-04:
+IronBound requires a CLI agent with local filesystem access. Chat interfaces — web, mobile, and desktop — are **not viable distribution targets**. Tested 2026-05-04:
 
-- **Claude.ai web/mobile chat:** chat attachment works for one-off use, but each new chat requires re-attaching the ZIP and re-prompting — too high-friction for a recurring tool, and there's no Project-level persistence (Projects don't accept ZIPs and GitHub-as-knowledge connection doesn't run as the persona)
-- **ChatGPT web:** safety layer rejects the persona-takeover pattern
-- **Gemini web:** emits a JSON output file instead of running as the agent
-- **Claude Projects:** ZIP uploads not accepted; GitHub-connection-as-knowledge doesn't preserve the agent persona
+**Desktop chat apps:**
+- **Claude Desktop (Chat / Cowork / Projects):** Hardened against persona injection. Chat and Cowork modes refuse pipe install and flag IRONBOUND.md as a jailbreak vector. Cowork has a locked system prompt that cannot be overridden. Projects mode doesn't recursively load subdirectory files so `ironbound/*.md` never enters context.
+- **ChatGPT Desktop:** Sandboxed — no local network or filesystem access.
+- **Gemini Desktop:** Requires manually seeding each new project with the ZIP and a prompt. Not viable as a recurring tool.
 
-If you're shipping an IronBound app, target CLI agents only. Direct users who can't install a CLI to a hosted alternative (Claude.ai web equivalent) — IronBound isn't the right shape for them.
+**Web/mobile:**
+- **Claude.ai web/mobile:** One-off only — each new chat requires re-attaching the ZIP and re-prompting.
+- **ChatGPT web:** Safety layer rejects the persona-takeover pattern.
+- **Gemini web:** Emits a JSON output file instead of running as the agent.
+
+If you're shipping an IronBound app, target CLI agents only. Direct users who can't install a CLI to a hosted alternative — IronBound isn't the right shape for chat interfaces.
 
 ---
 
