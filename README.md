@@ -4,7 +4,7 @@ Build and distribute AI agent apps that run on the user's existing Claude, Gemin
 
 Define your agent's identity, permissions, constraints, memory, and welcome flow in a handful of `.md` files. Ship it as a ZIP or a platform installer. Users open it in any supported agent CLI on a desktop OS. The agent introduces itself, creates a desktop shortcut, and just works.
 
-**See it in action:** [ToneAI](https://github.com/steve-krisjanovs/toneai-nux-qr-imprint) · [Chef Remy](https://github.com/cordfuse/imprint-chefremy)
+**See it in action:** [ToneAI](https://github.com/steve-krisjanovs/toneai-nux-qr-imprint) — an open-source guitar tone assistant built on Imprint.
 
 **Fork this repo to build your own.**
 
@@ -108,7 +108,6 @@ Apps built on Imprint:
 | App | Description |
 |---|---|
 | [ToneAI](https://github.com/steve-krisjanovs/toneai-nux-qr-imprint) | AI guitar tone assistant — NUX MightyAmp QR presets for any song, album, or artist |
-| [Chef Remy](https://github.com/cordfuse/imprint-chefremy) | AI recipe assistant — weather-aware, taste memory, cookbook PDFs |
 
 *Built something with Imprint? Open a PR to add it here.*
 
