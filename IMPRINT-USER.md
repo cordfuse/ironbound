@@ -81,9 +81,13 @@ When the developer asks to test user mode, follow this process:
    - `gemini` — Gemini CLI (sunsets 2026-06-18 — Google replaces with Antigravity CLI on that date)
    - `agy` — Antigravity CLI (Google's official Gemini CLI successor)
    - `opencode` — OpenCode
-3. Check if the chosen CLI is installed: `which <agent>` (or `command -v <agent>`)
+3. **If the developer picks `gemini`**, surface this nudge before proceeding (don't refuse — just give them the heads-up):
+   > ⚠ Gemini CLI retires 2026-06-18. The official successor is `agy` (Antigravity CLI). Want `agy` instead, or proceed with `gemini`?
+
+   Wait for an explicit reply ("proceed" / "yes" / "keep gemini" or "switch" / "use agy"). Run the appropriate launch from there.
+4. Check if the chosen CLI is installed: `which <agent>` (or `command -v <agent>`)
    - If not installed, tell the developer and suggest they install it first
-4. Open a new terminal window with CWD set to `./dist/` and invoke the agent:
+5. Open a new terminal window with CWD set to `./dist/` and invoke the agent:
    - macOS: `open -a Terminal && sleep 1 && osascript -e 'tell app "Terminal" to do script "cd <dist-path> && <agent>"'`
    - Linux: detect terminal emulator and spawn accordingly
 

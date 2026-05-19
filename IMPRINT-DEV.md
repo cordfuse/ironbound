@@ -50,6 +50,12 @@ Run `node src/build.js` to generate `./dist/`.
 
 Ask the developer which agent CLI to test with. Read `imprint/SESSION.md` and parse the `permissions` field. If `permissions: dangerous`, use the dangerous launch command.
 
+**If the developer picks `gemini`, surface this one-line warning before proceeding** (don't refuse — they may have a reason, just give them the heads-up so they can switch if they want):
+
+> ⚠ Google retires the Gemini CLI on 2026-06-18 — the official successor is `agy` (Antigravity CLI). Want to test against `agy` instead, or proceed with `gemini`?
+
+Wait for the developer's reply before launching. If they say "proceed", "yes", "keep gemini", or equivalent, run the gemini command from the table below. If they say "switch to agy", "use agy", or equivalent, run the `agy` command instead.
+
 **Sandboxed (default):**
 
 | Agent | Launch command |
