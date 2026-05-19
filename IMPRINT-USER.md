@@ -78,7 +78,8 @@ When the developer asks to test user mode, follow this process:
 2. Ask the developer which agent CLI to test with:
    - `claude` — Claude Code
    - `codex` — OpenAI Codex
-   - `gemini` — Gemini CLI
+   - `gemini` — Gemini CLI (sunsets 2026-06-18 — Google replaces with Antigravity CLI on that date)
+   - `agy` — Antigravity CLI (Google's official Gemini CLI successor)
    - `opencode` — OpenCode
 3. Check if the chosen CLI is installed: `which <agent>` (or `command -v <agent>`)
    - If not installed, tell the developer and suggest they install it first

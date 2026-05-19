@@ -75,7 +75,7 @@ When inactive (production), the agent will:
 
 1. Strips dev mode from IMPRINT.md
 2. Generates SHA-256 checksum
-3. Creates one-liner agent files (CLAUDE.md, GEMINI.md, AGENTS.md, .windsurfrules, .clinerules) redirecting to IMPRINT.md
+3. Creates one-liner agent files (CLAUDE.md, GEMINI.md, AGENTS.md, .windsurfrules, .clinerules) redirecting to IMPRINT.md. Antigravity CLI (Google's Gemini CLI successor, sunset 2026-06-18) is presumed to honor `GEMINI.md` since the engines are shared — add an `ANTIGRAVITY.md` sibling here only if Google publishes a distinct convention file.
 4. Copies `imprint/`, `src/`, README.md, LICENSE, package.json, version.txt
 
 ```bash
@@ -87,7 +87,7 @@ node src/build.js
 To test what end users will experience:
 
 1. Run `node src/build.js`
-2. Open `dist/` in an agent CLI (Claude Code, Gemini, Codex, etc.)
+2. Open `dist/` in an agent CLI (Claude Code, Gemini, Antigravity / `agy`, Codex, etc.)
 3. The agent will load the stripped IMPRINT.md with no dev mode — exactly what ships in the ZIP
 
 ---
